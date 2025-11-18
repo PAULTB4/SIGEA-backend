@@ -157,9 +157,9 @@ public class PagoService implements IPago {
 
             // URLs de retorno - puedes cambiar estas URLs
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://tu-dominio.com/pago-exitoso")
-                .pending("https://tu-dominio.com/pago-pendiente")
-                .failure("https://tu-dominio.com/pago-fallido")
+                .success("https://brennisc.github.io/url_sigea?status=success")
+                .pending("https://brennisc.github.io/url_sigea?status=pending")
+                .failure("https://brennisc.github.io/url_sigea?status=failure")
                 .build();
 
             // Configurar métodos de pago (solo Yape)
