@@ -1,4 +1,4 @@
-package com.zentry.sigea.module_usuarios.infrastructure.database.entities;
+package com.zentry.sigea.module_asistencias.infrastructure.database.entities;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -41,16 +41,17 @@ public class AsistenciaEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sesion_id" , nullable = false)
+    @JoinColumn(name = "sesion_id", nullable = false)
     private SesionEntity sesion;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inscripcion_id" , nullable = false)
+    @JoinColumn(name = "inscripcion_id", nullable = false)
     private InscripcionEntity inscripcion;
 
-    @Column(name = "presente" , nullable = false)
+    @Column(name = "presente", nullable = false)
     private Boolean presente = false;
 
-    @Column(name = "registrado_en" , nullable = false , columnDefinition = "TIMESTAMP")
+    @Column(name = "registrado_en", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime registradoEn = LocalDateTime.now();
+
 }

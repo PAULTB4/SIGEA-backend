@@ -1,4 +1,4 @@
-package com.zentry.sigea.module_usuarios.infrastructure.database.adapters;
+package com.zentry.sigea.module_asistencias.infrastructure.database.adapters;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,21 +11,20 @@ import com.zentry.sigea.module_inscripciones.infrastructure.database.entities.In
 import com.zentry.sigea.module_inscripciones.infrastructure.repository.InscripcionJPARepository;
 import com.zentry.sigea.module_sesiones.infrastructure.database.entities.SesionEntity;
 import com.zentry.sigea.module_sesiones.infrastructure.repositories.SesionJPARepository;
-import com.zentry.sigea.module_usuarios.core.entities.AsistenciaDomainEntity;
-import com.zentry.sigea.module_usuarios.core.repositories.IAsistenciaRepository;
-import com.zentry.sigea.module_usuarios.infrastructure.database.mappers.AsistenciaMapper;
-import com.zentry.sigea.module_usuarios.infrastructure.repositories.AsistenciaJPARepository;
+import com.zentry.sigea.module_asistencias.core.entities.AsistenciaDomainEntity;
+import com.zentry.sigea.module_asistencias.core.repositories.IAsistenciaRepository;
+import com.zentry.sigea.module_asistencias.infrastructure.database.mappers.AsistenciaMapper;
+import com.zentry.sigea.module_asistencias.infrastructure.repositories.AsistenciaJPARepository;
 
 @Repository
-public class AsistenciaRepositoryAdapter implements IAsistenciaRepository{
+public class AsistenciaRepositoryAdapter implements IAsistenciaRepository {
     
     private final AsistenciaJPARepository asistenciaJPARepository;
-    
     private final SesionJPARepository sesionJPARepository;
     private final InscripcionJPARepository inscripcionJPARepository;
 
     public AsistenciaRepositoryAdapter(
-        AsistenciaJPARepository asistenciaJPARepository , 
+        AsistenciaJPARepository asistenciaJPARepository,
         SesionJPARepository sesionJPARepository,
         InscripcionJPARepository inscripcionJPARepository
     ){
@@ -33,30 +32,37 @@ public class AsistenciaRepositoryAdapter implements IAsistenciaRepository{
         this.sesionJPARepository = sesionJPARepository;
         this.inscripcionJPARepository = inscripcionJPARepository;
     }
+
+    @Override
     public void save(AsistenciaDomainEntity asistenciaDomainEntity){
-        
         InscripcionEntity inscripcionEntity = inscripcionJPARepository.findById(
             UUID.fromString(asistenciaDomainEntity.getInscripcionId())
-        ).orElse(null);
+        ).orElseThrow(() -> new IllegalArgumentException(
+            "No se encontró inscripción con ID: " + asistenciaDomainEntity.getInscripcionId()
+        ));
 
         SesionEntity sesionEntity = sesionJPARepository.findById(
             UUID.fromString(asistenciaDomainEntity.getSesionId())
-        ).orElse(null);
+        ).orElseThrow(() -> new IllegalArgumentException(
+            "No se encontró sesión con ID: " + asistenciaDomainEntity.getSesionId()
+        ));
 
         asistenciaJPARepository.save(
             AsistenciaMapper.toEntity(
-                asistenciaDomainEntity , 
-                sesionEntity , 
+                asistenciaDomainEntity,
+                sesionEntity,
                 inscripcionEntity
             )
         );
     }
 
+    @Override
     public Optional<AsistenciaDomainEntity> findById(String id){
         return asistenciaJPARepository.findById(UUID.fromString(id))
-            .map(a -> AsistenciaMapper.toDomain(a));
+            .map(AsistenciaMapper::toDomain);
     }
 
+    @Override
     public List<AsistenciaDomainEntity> findByInscripcionId(String inscripcionId){
         return asistenciaJPARepository.findByInscripcionId(UUID.fromString(inscripcionId))
             .stream()
@@ -64,6 +70,7 @@ public class AsistenciaRepositoryAdapter implements IAsistenciaRepository{
             .collect(Collectors.toList());
     }
 
+    @Override
     public List<AsistenciaDomainEntity> findBySesionId(String sesionId){
         return asistenciaJPARepository.findBySesionId(UUID.fromString(sesionId))
             .stream()
@@ -71,10 +78,18 @@ public class AsistenciaRepositoryAdapter implements IAsistenciaRepository{
             .collect(Collectors.toList());
     }
 
-    public List<AsistenciaDomainEntity> findBySesionIdAndPresente(String sesionId , Boolean presente){
-        return asistenciaJPARepository.findBySesionIdAndPresente(UUID.fromString(sesionId), presente)
+    @Override
+    public List<AsistenciaDomainEntity> findBySesionIdAndPresente(String sesionId, Boolean presente){
+        return asistenciaJPARepository.findBySesionIdAndPresente(
+            UUID.fromString(sesionId), presente
+        )
             .stream()
             .map(AsistenciaMapper::toDomain)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean existsById(String id) {
+        return asistenciaJPARepository.existsById(UUID.fromString(id));
     }
 }
