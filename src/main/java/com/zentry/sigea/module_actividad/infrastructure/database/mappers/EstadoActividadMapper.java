@@ -17,7 +17,10 @@ public class EstadoActividadMapper {
         }
         
         EstadoActividadEntity estadoActividadEntity = new EstadoActividadEntity();
-
+        
+        if (estadoActividadDomainEntity.getEstadoActividadId() != null) {
+            estadoActividadEntity.setId(java.util.UUID.fromString(estadoActividadDomainEntity.getEstadoActividadId()));
+        }
         estadoActividadEntity.setCodigo(estadoActividadDomainEntity.getCodigo());
         estadoActividadEntity.setEtiqueta(estadoActividadDomainEntity.getEtiqueta());
         
@@ -33,9 +36,10 @@ public class EstadoActividadMapper {
         }
 
         EstadoActividadDomainEntity estadoActividadDomainEntity = new EstadoActividadDomainEntity();
-
+        
+        estadoActividadDomainEntity.setEstadoActividadId(estadoActividadEntity.getId().toString());
         estadoActividadDomainEntity.setCodigo(estadoActividadEntity.getCodigo());
-        estadoActividadDomainEntity.setEtiqueta(estadoActividadEntity.getCodigo());
+        estadoActividadDomainEntity.setEtiqueta(estadoActividadEntity.getEtiqueta());
         
         return estadoActividadDomainEntity;
     }

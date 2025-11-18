@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ActividadDomainEntity {
+    private String actividadId;
     private String titulo;
     private String descripcion;
     private LocalDate fechaInicio;
@@ -94,6 +95,14 @@ public class ActividadDomainEntity {
     }
 
     /* METODOS DEL DOMINIO */
+
+    public String getActividadId() {
+        return actividadId;
+    }
+
+    public void setActividadId(String actividadId) {
+        this.actividadId = actividadId;
+    }
 
     public static ActividadDomainEntity create(
         String titulo, 

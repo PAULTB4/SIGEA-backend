@@ -3,6 +3,7 @@ package com.zentry.sigea.module_actividad.core.entities;
 import java.time.LocalDateTime;
 
 public class TipoActividadDomainEntity {
+    private String tipoActividadId;
     private String nombreActividad;
     private String descripcion;
     private LocalDateTime createdAt;
@@ -20,6 +21,14 @@ public class TipoActividadDomainEntity {
         tipoActividadDomainEntity.setUpdatedAt(now);
 
         return tipoActividadDomainEntity;
+    }
+
+    public String getTipoActividadId() {
+        return tipoActividadId;
+    }
+
+    public void setTipoActividadId(String tipoActividadId) {
+        this.tipoActividadId = tipoActividadId;
     }
 
     public String getNombreActividad() {

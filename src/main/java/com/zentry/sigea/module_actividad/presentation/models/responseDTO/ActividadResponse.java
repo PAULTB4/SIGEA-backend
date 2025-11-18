@@ -4,20 +4,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.zentry.sigea.module_actividad.core.entities.ActividadDomainEntity;
-import com.zentry.sigea.module_actividad.core.entities.EstadoActividadDomainEntity;
-import com.zentry.sigea.module_actividad.core.entities.TipoActividadDomainEntity;
 
 /**
  * DTO para enviar datos de actividad al frontend
  */
 public class ActividadResponse {
+    private String id;
     private String titulo;
     private String descripcion;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
-    private EstadoActividadDomainEntity estado;
+    private EstadoActividadResponse estado;
     private String organizadorId;
-    private TipoActividadDomainEntity tipoActividad;
+    private TipoActividadResponse tipoActividad;
     private String ubicacion;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
@@ -32,13 +31,14 @@ public class ActividadResponse {
     public ActividadResponse() {}
 
     public ActividadResponse(
+        String id,
         String titulo, 
         String descripcion, 
         LocalDate fechaInicio, 
         LocalDate fechaFin, 
-        EstadoActividadDomainEntity estado, 
+        EstadoActividadResponse estado, 
         String organizadorId, 
-        TipoActividadDomainEntity tipoActividad, 
+        TipoActividadResponse tipoActividad, 
         String ubicacion, 
         LocalDateTime fechaCreacion, 
         LocalDateTime fechaActualizacion, 
@@ -47,6 +47,7 @@ public class ActividadResponse {
         boolean pendiente, 
         Long duracionEnDias
     ) {
+        this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaInicio = fechaInicio;
@@ -68,13 +69,14 @@ public class ActividadResponse {
      */
     public static ActividadResponse fromEntity(ActividadDomainEntity actividadDomainEntity) {
         return new ActividadResponse(
+            actividadDomainEntity.getActividadId(),
             actividadDomainEntity.getTitulo(),
             actividadDomainEntity.getDescripcion(),
             actividadDomainEntity.getFechaInicio(),
             actividadDomainEntity.getFechaFin(),
-            actividadDomainEntity.getEstadoActividadDomainEntity(),
+            EstadoActividadResponse.fromEntity(actividadDomainEntity.getEstadoActividadDomainEntity()),
             actividadDomainEntity.getOrganizadorId(),
-            actividadDomainEntity.getTipoActividadDomainEntity(),
+            TipoActividadResponse.fromEntity(actividadDomainEntity.getTipoActividadDomainEntity()),
             actividadDomainEntity.getLugar(),
             actividadDomainEntity.getCreatedAt(),
             actividadDomainEntity.getUpdatedAt(),
@@ -83,6 +85,14 @@ public class ActividadResponse {
             actividadDomainEntity.isPending(),
             actividadDomainEntity.getDurationInDays()
         );
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -117,11 +127,11 @@ public class ActividadResponse {
         this.fechaFin = fechaFin;
     }
 
-    public EstadoActividadDomainEntity getEstado() {
+    public EstadoActividadResponse getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoActividadDomainEntity estado) {
+    public void setEstado(EstadoActividadResponse estado) {
         this.estado = estado;
     }
 
@@ -132,11 +142,11 @@ public class ActividadResponse {
         this.organizadorId = organizadorId;
     }
 
-    public TipoActividadDomainEntity getTipoActividad() {
+    public TipoActividadResponse getTipoActividad() {
         return tipoActividad;
     }
 
-    public void setTipoActividad(TipoActividadDomainEntity tipoActividad) {
+    public void setTipoActividad(TipoActividadResponse tipoActividad) {
         this.tipoActividad = tipoActividad;
     }
 

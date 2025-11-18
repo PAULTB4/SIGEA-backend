@@ -11,7 +11,10 @@ public class ActividadMapper {
         UsuarioEntity usuarioEntity
     ){
         ActividadEntity actividadEntity = new ActividadEntity();
-
+        
+        if (actividadDomainEntity.getActividadId() != null) {
+            actividadEntity.setId(java.util.UUID.fromString(actividadDomainEntity.getActividadId()));
+        }
         actividadEntity.setTitulo(actividadDomainEntity.getTitulo());
         actividadEntity.setDescripcion(actividadDomainEntity.getDescripcion());
         actividadEntity.setFechaInicio(actividadDomainEntity.getFechaInicio());
@@ -27,13 +30,17 @@ public class ActividadMapper {
                 actividadDomainEntity.getTipoActividadDomainEntity()
             )
         );
+        actividadEntity.setLugar(actividadDomainEntity.getLugar());
+        actividadEntity.setCreatedAt(actividadDomainEntity.getCreatedAt());
+        actividadEntity.setUpdatedAt(actividadDomainEntity.getUpdatedAt());
 
         return actividadEntity;
     }
 
     public static ActividadDomainEntity toDomain(ActividadEntity actividadEntity){
         ActividadDomainEntity actividadDomainEntity = new ActividadDomainEntity();
-
+        
+        actividadDomainEntity.setActividadId(actividadEntity.getId().toString());
         actividadDomainEntity.setTitulo(actividadEntity.getTitulo());
         actividadDomainEntity.setDescripcion(actividadEntity.getDescripcion());
         actividadDomainEntity.setFechaInicio(actividadEntity.getFechaInicio());
@@ -52,6 +59,8 @@ public class ActividadMapper {
             actividadEntity.getOrganizador().getId().toString()
         );
         actividadDomainEntity.setLugar(actividadEntity.getLugar());
+        actividadDomainEntity.setCreatedAt(actividadEntity.getCreatedAt());
+        actividadDomainEntity.setUpdatedAt(actividadEntity.getUpdatedAt());
 
         return actividadDomainEntity;
     }

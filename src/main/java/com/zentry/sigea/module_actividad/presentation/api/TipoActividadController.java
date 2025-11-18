@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,6 +67,19 @@ public class TipoActividadController {
         try {
             tipoActividadService.eliminarTipoActividad(id);
             return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TipoActividadResponse> actualizarTipoActividad(@PathVariable String id, @RequestBody TipoActividadRequest request) {
+        try {
+            TipoActividadDomainEntity tipoActualizado = tipoActividadService.actualizarTipoActividad(id, request);
+            TipoActividadResponse response = TipoActividadResponse.fromEntity(tipoActualizado);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

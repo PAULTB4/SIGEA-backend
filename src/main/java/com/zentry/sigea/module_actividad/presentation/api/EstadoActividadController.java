@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import com.zentry.sigea.module_actividad.core.entities.EstadoActividadDomainEnti
 import com.zentry.sigea.module_actividad.presentation.models.requestDTO.EstadoActividadRequest;
 import com.zentry.sigea.module_actividad.presentation.models.responseDTO.EstadoActividadResponse;
 import com.zentry.sigea.module_actividad.services.EstadoActividadService;
+
 
 
 /*
@@ -61,6 +63,19 @@ public class EstadoActividadController {
         try {
             estadoActividadService.eliminarEstadoActividad(id);
             return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EstadoActividadResponse> actualizarEstado(@PathVariable String id, @RequestBody EstadoActividadRequest request) {
+        try {
+            EstadoActividadDomainEntity estadoActualizado = estadoActividadService.actualizarEstadoActividad(request);
+            EstadoActividadResponse response = EstadoActividadResponse.fromEntity(estadoActualizado);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

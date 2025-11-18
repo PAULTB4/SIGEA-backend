@@ -1,6 +1,7 @@
 package com.zentry.sigea.module_actividad.core.entities;
 
 public class EstadoActividadDomainEntity {
+    private String estadoActividadId;
     private String codigo;
     private String etiqueta;
 
@@ -16,7 +17,12 @@ public class EstadoActividadDomainEntity {
 
         return estadoActividadDomainEntity;
     }
-
+    public String getEstadoActividadId() {
+        return estadoActividadId;
+    }
+    public void setEstadoActividadId(String estadoActividadId) {
+        this.estadoActividadId = estadoActividadId;
+    }
     public String getCodigo() {
         return codigo;
     }

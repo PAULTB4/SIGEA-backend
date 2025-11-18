@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zentry.sigea.module_actividad.presentation.models.requestDTO.ActividadRequest;
 import com.zentry.sigea.module_actividad.presentation.models.requestDTO.CrearActividadRequest;
 import com.zentry.sigea.module_actividad.presentation.models.responseDTO.ActividadResponse;
 import com.zentry.sigea.module_actividad.services.ActividadService;
@@ -84,6 +86,21 @@ public class ActividadController {
         try {
             actividadService.eliminarActividad(id);
             return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Actualizar una actividad existente
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ActividadResponse> actualizarActividad(@PathVariable String id, @RequestBody ActividadRequest request) {
+        try {
+            ActividadResponse actividadActualizada = actividadService.actualizarActividad(id, request);
+            return ResponseEntity.ok(actividadActualizada);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
