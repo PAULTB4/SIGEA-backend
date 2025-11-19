@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.payment.PaymentCreateRequest;
 import com.mercadopago.client.payment.PaymentPayerRequest;
-import com.zentry.sigea.module_pago.presentation.dto.ConsultPagoRequest;
-import com.zentry.sigea.module_pago.presentation.dto.YapePaymentRequest;
+import com.zentry.sigea.module_pago.presentation.model.requestDTO.ConsultPagoRequest;
+import com.zentry.sigea.module_pago.presentation.model.requestDTO.YapePaymentRequest;
 import com.zentry.sigea.module_pago.services.PagoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,23 +40,8 @@ public class PagoController {
      */
     @PostMapping("/crear-pago-yape")
     @Operation(summary = "Crear pago con Yape", description = "Procesa un pago usando Yape a través de MercadoPago")
-    public Object pagarConYape() {
-        return pagoService.pagarConYape();
-    }
-
-    /**
-     * Crea una URL personalizada de pago
-     */
-    @PostMapping("/crear-url-pago")
-    @Operation(summary = "Crear URL de pago personalizada", description = "Genera una URL de MercadoPago para redireccionar al usuario")
-    public Object crearUrlPago(@RequestBody YapePaymentRequest request) {
-        log.info("Generando URL de pago para: {}", request.getEmail());
-        return pagoService.crearUrlPago(
-            request.getDescripcion(),
-            "Pago de " + request.getDescripcion(),
-            request.getMonto(),
-            request.getEmail()
-        );
+    public Object pagarConYape(@RequestBody YapePaymentRequest request) {
+        return pagoService.pagarConYape(request.getMonto(), request.getDescripcion());
     }
     
     /**
@@ -107,17 +92,17 @@ public class PagoController {
         return null;
     }
 
-    // Métodos helper para convertir DTOs a Map (temporalmente)
-    private Map<String, Object> convertToMap(YapePaymentRequest request) {
-        Map<String, Object> map = new java.util.HashMap<>();
-        map.put("descripcion", request.getDescripcion());
-        map.put("monto", request.getMonto());
-        map.put("token", request.getToken());
-        map.put("email", request.getEmail());
-        map.put("referencia", request.getReferencia());
-        map.put("usuarioId", request.getUsuarioId());
-        return map;
-    }
+    // // Métodos helper para convertir DTOs a Map (temporalmente)
+    // private Map<String, Object> convertToMap(YapePaymentRequest request) {
+    //     Map<String, Object> map = new java.util.HashMap<>();
+    //     map.put("descripcion", request.getDescripcion());
+    //     map.put("monto", request.getMonto());
+    //     map.put("token", request.getToken());
+    //     map.put("email", request.getEmail());
+    //     map.put("referencia", request.getReferencia());
+    //     map.put("usuarioId", request.getUsuarioId());
+    //     return map;
+    // }
 
     private Map<String, Object> convertToMap(ConsultPagoRequest request) {
         Map<String, Object> map = new java.util.HashMap<>();

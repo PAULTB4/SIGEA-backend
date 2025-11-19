@@ -5,8 +5,7 @@ import java.util.Map;
 
 public interface IPago {
 
-    Object pagarConYape();
-    Object crearUrlPago(String titulo, String descripcion, BigDecimal monto, String emailUsuario);
+    Object pagarConYape(BigDecimal monto, String descripcion);
     Object consultarPago(Object request);
     Object testEndpoint();   
     Map<String, Object> createMetadata(Map<String, Object> request);
