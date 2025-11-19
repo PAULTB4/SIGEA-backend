@@ -7,6 +7,5 @@ public interface IPago {
 
     Object pagarConYape(BigDecimal monto, String descripcion);
     Object consultarPago(Object request);
-    Object testEndpoint();   
     Map<String, Object> createMetadata(Map<String, Object> request);
 }

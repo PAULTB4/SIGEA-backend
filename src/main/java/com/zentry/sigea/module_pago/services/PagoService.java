@@ -137,11 +137,6 @@ public class PagoService implements IPago {
         throw new UnsupportedOperationException("Unimplemented method 'consultarPago'");
     }
 
-    @Override
-    public Object testEndpoint() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'testEndpoint'");
-    }
 
 
 

@@ -1,6 +1,5 @@
 package com.zentry.sigea.module_pago.presentation.api;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -12,9 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mercadopago.client.payment.PaymentClient;
-import com.mercadopago.client.payment.PaymentCreateRequest;
-import com.mercadopago.client.payment.PaymentPayerRequest;
 import com.zentry.sigea.module_pago.presentation.model.requestDTO.ConsultPagoRequest;
 import com.zentry.sigea.module_pago.presentation.model.requestDTO.YapePaymentRequest;
 import com.zentry.sigea.module_pago.services.PagoService;
@@ -59,38 +55,6 @@ public class PagoController {
         return pagoService.consultarPago(convertToMap(request));
     }
 
-    /**
-     * Endpoint de prueba con datos hardcodeados
-     */
-    @PostMapping("/test-endpoint")
-    @Operation(summary = "Endpoint de prueba de pago", description = "Realiza un pago de prueba con datos hardcodeados para verificar la integración con MercadoPago")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Pago de prueba procesado correctamente"),
-    })
-    public Object testEndpoint() {
-        // La configuración se hace automáticamente a través del servicio
-
-        PaymentClient client = new PaymentClient();
-
-        PaymentCreateRequest createRequest =
-            PaymentCreateRequest.builder()
-                .description("Titulo del producto")
-                .installments(1)
-                .payer(PaymentPayerRequest.builder()
-                    .email("test_user_123@testuser.com")
-                    .build())
-                .paymentMethodId("yape")
-                .token("ff8080814c11e237014c1ff593b57b4d")
-                .transactionAmount(new BigDecimal("5000"))
-                .build();
-
-        try {
-            client.create(createRequest);
-        } catch (Exception e) {
-            log.error("Error en endpoint de prueba: {}", e.getMessage(), e);
-        }
-        return null;
-    }
 
     // // Métodos helper para convertir DTOs a Map (temporalmente)
     // private Map<String, Object> convertToMap(YapePaymentRequest request) {
