@@ -68,17 +68,21 @@ public class PagoService implements IPago {
             List<PreferencePaymentMethodRequest> excludedPaymentMethods = new ArrayList<>();
             // Excluir todos los métodos excepto Yape
             excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("visa").build());
-            
+            excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("master").build());
+            excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("amex").build());
+            excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("diners").build());
+            excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("cabal").build());
             PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
                 .excludedPaymentMethods(excludedPaymentMethods)
                 .installments(1) // Solo 1 cuota para Yape
                 .build();
+            
+        
 
             // Información del pagador
             PreferencePayerRequest payer = PreferencePayerRequest.builder()
-                .name("Usuario")
-                .surname("SIGEA")
-                .email("test_user_123@testuser.com")
+                .name("compradortest")
+                .email("brennisbenjaminn@gmail.com")
                 .build();
 
             // Crear la preferencia
