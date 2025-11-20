@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.stereotype.Repository;
+
 import com.zentry.sigea.module_pago.core.entities.EstadoPagoDomainEntity;
 import com.zentry.sigea.module_pago.core.repository.IEstadoPagoRepository;
 import com.zentry.sigea.module_pago.infrastucture.database.mappers.EstadoPagoMapper;
 import com.zentry.sigea.module_pago.infrastucture.repository.EstadoPagoJPARepository;
 
+@Repository
 public class EstadoPagoRepositoryAdapter implements IEstadoPagoRepository {
 
     private final EstadoPagoJPARepository estadoPagoJPARepository;

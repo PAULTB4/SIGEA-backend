@@ -50,7 +50,7 @@ public class PagoEntity {
     private MetodoPagoEntity metodoPago;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "estado_id", referencedColumnName = "id_estado_pago")
+    @JoinColumn(name = "estado_id", referencedColumnName = "id_estado")
     private EstadoPagoEntity estadoPago;
 
     @Column(name = "referencia_ext", length = 120)

@@ -1,11 +1,14 @@
 package com.zentry.sigea.module_pago.services.usecase;
 
+import org.springframework.stereotype.Component;
+
 import com.zentry.sigea.module_pago.core.entities.PagoDomainEntity;
 import com.zentry.sigea.module_pago.core.repository.IEstadoPagoRepository;
 import com.zentry.sigea.module_pago.core.repository.IMetodoPagoRepository;
 import com.zentry.sigea.module_pago.core.repository.IPagoRepository;
 import com.zentry.sigea.module_pago.presentation.model.requestDTO.PagoRequest;
 
+@Component
 public class CrearPagoYapeUseCase {
 
     

@@ -16,10 +16,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "WebHook", description = "API para gestión de WebHooks")
 public class WebHookController {
 
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WebHookController.class);
+
     @PostMapping
     public ResponseEntity<String> recibirWebHook(@RequestBody WebHookResponse entity) {
-        System.out.println("WebHook recibido: " + entity.getType());
-        System.out.println("ID del evento: " + entity.getData().getId());
+        
+        logger.info("WebHook recibido: " + entity);
         return ResponseEntity.ok("WebHook recibido");
     }
     
