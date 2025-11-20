@@ -8,12 +8,21 @@ import java.time.LocalDateTime;
  * Representa la relación entre un usuario y una actividad
  */
 public class InscripcionDomainEntity {
+    private String idInscripcion;
     private LocalDate fechaInscripcion;
     private String usuarioId;
     private String actividadId;
     private EstadoInscripcionDomainEntity estadoInscripcionDomainEntity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public String getIdInscripcion() {
+        return idInscripcion;
+    }
+
+    public void setIdInscripcion(String idInscripcion) {
+        this.idInscripcion = idInscripcion;
+    }
 
     public LocalDate getFechaInscripcion() {
         return fechaInscripcion;

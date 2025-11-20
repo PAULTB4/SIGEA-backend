@@ -28,5 +28,5 @@ public class MetodoPagoEntity {
     private String etiqueta;
 
 
-
+    
 }

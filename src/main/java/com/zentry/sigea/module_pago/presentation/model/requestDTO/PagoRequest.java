@@ -8,6 +8,8 @@ public class PagoRequest {
     private String descripcion;
     private BigDecimal monto;
     private String referencia;
+    private String metodoPagoId;
+    private String estadoPagoId;
     
     // Getters y setters
     public String getTitulo() { return titulo; }
@@ -21,5 +23,10 @@ public class PagoRequest {
     
     public String getReferencia() { return referencia; }
     public void setReferencia(String referencia) { this.referencia = referencia; }
+
+    public String getMetodoPagoId() { return metodoPagoId; }
+    public void setMetodoPagoId(String metodoPagoId) { this.metodoPagoId = metodoPagoId; }
+    public String getEstadoPagoId() { return estadoPagoId; }
+    public void setEstadoPagoId(String estadoPagoId) { this.estadoPagoId = estadoPagoId; }
     
 }
