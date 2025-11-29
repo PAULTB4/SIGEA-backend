@@ -62,6 +62,12 @@ public class ActividadRepositoryAdapter implements IActividadRespository {
                 .collect(Collectors.toList());
     }
 
+    public List<String> findAllIds(){
+        return actividadJPARepository.findAllIds().stream()
+            .map(Object::toString)
+            .collect(Collectors.toList());
+    }
+
     public List<ActividadDomainEntity> findByEstadoActividadId(String statusId) {
         return actividadJPARepository.findByEstadoActividadId(UUID.fromString(statusId)).stream()
                 .map(ActividadMapper::toDomain)

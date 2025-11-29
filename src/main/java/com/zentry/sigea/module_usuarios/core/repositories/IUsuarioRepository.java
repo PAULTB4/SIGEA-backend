@@ -10,4 +10,5 @@ public interface IUsuarioRepository {
     public Optional<UsuarioDomainEntity> findById(String id);
     public List<UsuarioDomainEntity> findAll();
     public Optional<UsuarioDomainEntity> findByCorreo(String correo);
+    public String findIdByCorreo(String correo);
 }

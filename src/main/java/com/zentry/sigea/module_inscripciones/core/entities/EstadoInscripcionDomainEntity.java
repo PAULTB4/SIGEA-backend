@@ -5,10 +5,14 @@ package com.zentry.sigea.module_inscripciones.core.entities;
  * Representa los estados posibles: PENDIENTE | CONFIRMADA | CANCELADA
  */
 public class EstadoInscripcionDomainEntity {
+    private String id;
     private String codigo;
     private String etiqueta;
 
-    public static EstadoInscripcionDomainEntity create(String codigo, String etiqueta) {
+    public static EstadoInscripcionDomainEntity create(
+        String codigo, 
+        String etiqueta
+    ) {
         EstadoInscripcionDomainEntity estadoInscripcionDomainEntity = new EstadoInscripcionDomainEntity();
 
         estadoInscripcionDomainEntity.setCodigo(codigo);
@@ -35,5 +39,13 @@ public class EstadoInscripcionDomainEntity {
 
     public void setEtiqueta(String etiqueta) {
         this.etiqueta = etiqueta;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

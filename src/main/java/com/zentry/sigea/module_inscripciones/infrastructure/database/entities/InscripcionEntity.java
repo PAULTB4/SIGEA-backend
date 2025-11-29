@@ -1,7 +1,6 @@
 package com.zentry.sigea.module_inscripciones.infrastructure.database.entities;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -55,13 +54,7 @@ public class InscripcionEntity {
     private ActividadEntity actividad;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estado_id", nullable = false)
+    @JoinColumn(name = "estado_inscripcion_id", nullable = false)
     private EstadoInscripcionEntity estadoInscripcion;
-
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP")
-    private LocalDateTime createdAt = LocalDateTime.now();
-    
-    @Column(name = "updated_at", nullable = true, columnDefinition = "TIMESTAMP")
-    private LocalDateTime updatedAt = LocalDateTime.now();
 }
 

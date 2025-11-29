@@ -32,8 +32,6 @@ public class InscripcionMapper {
                 inscripcionDomainEntity.getEstadoInscripcionDomainEntity()
             )
         );
-        inscripcionEntity.setCreatedAt(inscripcionDomainEntity.getCreatedAt());
-        inscripcionEntity.setUpdatedAt(inscripcionDomainEntity.getUpdatedAt());
 
         return inscripcionEntity;
     }
@@ -62,8 +60,6 @@ public class InscripcionMapper {
                 inscripcionEntity.getEstadoInscripcion()
             )
         );
-        inscripcionDomainEntity.setCreatedAt(inscripcionEntity.getCreatedAt());
-        inscripcionDomainEntity.setUpdatedAt(inscripcionEntity.getUpdatedAt());
 
         return inscripcionDomainEntity;
     }

@@ -1,6 +1,7 @@
 package com.zentry.sigea.module_usuarios.infrastructure.database.adapters;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,15 +56,46 @@ public class UsuarioRolRepositoryAdapter implements IUsuarioRolRepository {
         UsuarioRolEntity usuarioRolEntity = new UsuarioRolEntity();
 
         usuarioRolEntity.setRol(
-            rolJPARepository.findById(UUID.fromString(rolId)).orElse(null)
+            rolJPARepository.findById(UUID.fromString(rolId)).orElseThrow(
+                () -> new RuntimeException("No se encontro el ID de uno de los roles.")
+            )
         );
 
         usuarioRolEntity.setUsuario(
-            usuarioJPARepository.findById(UUID.fromString(usuarioId)).orElse(null)
+            usuarioJPARepository.findById(UUID.fromString(usuarioId)).orElseThrow(
+                () -> new RuntimeException("No se encontro el ID del usuario.")
+            )
         );
 
         usuarioRolEntity.setAsignadoEn(nowLocalDateTime);
 
         usuarioRolJPARepository.save(usuarioRolEntity);
+    }
+
+    public void saveOneUserWithAllRolesId(String usuarioId , List<String> listRolesId){
+        List<UsuarioRolEntity> listUsuarioRolEntities = new ArrayList<>();
+        LocalDateTime nowLocalDateTime = LocalDateTime.now();
+
+        for(String rolId : listRolesId){
+            UsuarioRolEntity usuarioRolEntity = new UsuarioRolEntity();
+
+            usuarioRolEntity.setRol(
+                rolJPARepository.findById(UUID.fromString(rolId)).orElseThrow(
+                    () -> new RuntimeException("No se encontro el ID de uno de los roles.")
+                )
+            );
+                    
+            usuarioRolEntity.setUsuario(
+                usuarioJPARepository.findById(UUID.fromString(usuarioId)).orElseThrow(
+                    () -> new RuntimeException("No se encontro el ID del usuario.")
+                )
+            );
+
+            usuarioRolEntity.setAsignadoEn(nowLocalDateTime);
+
+            listUsuarioRolEntities.add(usuarioRolEntity);
+        }
+
+        usuarioRolJPARepository.saveAll(listUsuarioRolEntities);
     }
 }

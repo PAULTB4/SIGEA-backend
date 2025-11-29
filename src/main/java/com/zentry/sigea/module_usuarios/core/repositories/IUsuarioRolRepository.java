@@ -9,4 +9,5 @@ public interface IUsuarioRolRepository {
     public List<RolDomainEntity> findRolesByUsuarioId(String usuarioId);
     public LocalDateTime findAsingandoEnByUsuarioIdAndRolId(String usuarioId , String rolId);
     public void save(String usuarioId , String rolId);
+    public void saveOneUserWithAllRolesId(String usuarioId , List<String> listRolesId);
 }

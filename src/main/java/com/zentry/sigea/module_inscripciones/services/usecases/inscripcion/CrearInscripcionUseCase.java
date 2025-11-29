@@ -8,7 +8,7 @@ import com.zentry.sigea.module_inscripciones.core.entities.EstadoInscripcionDoma
 import com.zentry.sigea.module_inscripciones.core.entities.InscripcionDomainEntity;
 import com.zentry.sigea.module_inscripciones.core.repositories.IInscripcionRepository;
 import com.zentry.sigea.module_inscripciones.core.repositories.IEstadoInscripcionRepository;
-import com.zentry.sigea.module_inscripciones.presentation.models.requestDTO.CrearInscripcionRequest;
+import com.zentry.sigea.module_inscripciones.services.serviceDTO.CrearInscripcionServiceDTO;
 
 /**
  * Caso de uso para crear una nueva inscripción
@@ -30,11 +30,11 @@ public class CrearInscripcionUseCase {
     /**
      * Ejecuta la creación de inscripción recibiendo IDs y convirtiéndolos a objetos completos
      */
-    public String execute(CrearInscripcionRequest request) {
+    public String execute(CrearInscripcionServiceDTO crearInscripcionServiceDTO) {
         // Validar que no exista ya una inscripción para este usuario y actividad
         if (inscripcionRepository.existsByUsuarioIdAndActividadId(
-            request.getUsuarioId(), 
-            request.getActividadId()
+            crearInscripcionServiceDTO.getUsuarioId(), 
+            crearInscripcionServiceDTO.getActividadId()
         )) {
             throw new IllegalArgumentException(
                 "El usuario ya está inscrito en esta actividad"
@@ -42,19 +42,19 @@ public class CrearInscripcionUseCase {
         }
         
         // Obtener estado por ID y validar que exista
-        EstadoInscripcionDomainEntity estado = getEstadoInscripcionById(request.getEstadoId());
+        EstadoInscripcionDomainEntity estado = getEstadoInscripcionById(crearInscripcionServiceDTO.getEstadoId());
         
         // Validaciones de negocio específicas del caso de uso
-        validateBusinessRules(request);
+        validateBusinessRules(crearInscripcionServiceDTO);
         
         // Crear la entidad usando el factory method del dominio
-        LocalDate fechaInscripcion = request.getFechaInscripcion() != null ? 
-            request.getFechaInscripcion() : LocalDate.now();
+        LocalDate fechaInscripcion = crearInscripcionServiceDTO.getFechaInscripcion() != null ? 
+            crearInscripcionServiceDTO.getFechaInscripcion() : LocalDate.now();
         
         InscripcionDomainEntity nuevaInscripcion = InscripcionDomainEntity.create(
             fechaInscripcion,
-            request.getUsuarioId(),
-            request.getActividadId(),
+            crearInscripcionServiceDTO.getUsuarioId(),
+            crearInscripcionServiceDTO.getActividadId(),
             estado
         );
         
@@ -82,9 +82,9 @@ public class CrearInscripcionUseCase {
         return estado;
     }
     
-    private void validateBusinessRules(CrearInscripcionRequest request) {
+    private void validateBusinessRules(CrearInscripcionServiceDTO crearInscripcionServiceDTO) {
         // Validar que la fecha de inscripción no sea en el pasado (si se proporciona)
-        if (request.getFechaInscripcion().isBefore(LocalDate.now())) {
+        if (crearInscripcionServiceDTO.getFechaInscripcion().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException(
                 "La fecha de inscripción no puede ser en el pasado"
             );

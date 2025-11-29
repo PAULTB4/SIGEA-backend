@@ -1,5 +1,7 @@
 package com.zentry.sigea.module_asistencias.presentation.models.mappers;
 
+import java.util.Optional;
+
 import com.zentry.sigea.module_asistencias.core.entities.AsistenciaDomainEntity;
 import com.zentry.sigea.module_asistencias.presentation.models.requestDTO.RegistrarAsistenciaRequest;
 import com.zentry.sigea.module_asistencias.presentation.models.responseDTO.AsistenciaResponse;
@@ -13,7 +15,8 @@ public class AsistenciaPresentationMapper {
         return AsistenciaDomainEntity.create(
             request.getSesionId(),
             request.getInscripcionId(),
-            request.getPresente()
+            request.getPresente() , 
+            Optional.of(null)
         );
     }
 

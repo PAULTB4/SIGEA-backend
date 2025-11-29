@@ -1,5 +1,7 @@
 package com.zentry.sigea.module_asistencias.services.usecases;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
 import com.zentry.sigea.module_asistencias.core.entities.AsistenciaDomainEntity;
@@ -54,7 +56,9 @@ public class RegistrarAsistenciaUseCase {
         AsistenciaDomainEntity asistenciaRegistrada = AsistenciaDomainEntity.create(
             request.getSesionId(),
             request.getInscripcionId(),
-            request.getPresente()
+            request.getPresente() , 
+            Optional.of(null)
+            
         );
         asistenciaRepository.save(asistenciaRegistrada);
         

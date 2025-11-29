@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.hibernate.id.uuid.UuidValueGenerator;
 import org.springframework.stereotype.Repository;
 
 import com.zentry.sigea.module_inscripciones.core.entities.InscripcionDomainEntity;
@@ -83,6 +84,16 @@ public class InscripcionRepositoryAdapter implements IInscripcionRepository {
         .collect(Collectors.toList());
     }
 
+    public List<String> findIdByListActividadIds(List<String> listActividadIds){
+        return inscripcionJPARepository.findIdByListActividadIds(
+            listActividadIds.stream()
+                .map(UUID::fromString)
+                .collect(Collectors.toList())
+        ).stream()
+        .map(Object::toString)
+        .collect(Collectors.toList());
+    }
+
     public List<InscripcionDomainEntity> findAll() {
         return inscripcionJPARepository.findAll().stream()
             .map(InscripcionMapper::toDomain)
@@ -109,6 +120,13 @@ public class InscripcionRepositoryAdapter implements IInscripcionRepository {
             UUID.fromString(usuarioId),
             UUID.fromString(actividadId)
         );
+    }
+
+    public String findIdByUsuarioIdAndActividadId(String usuarioId , String actividadId){
+        return inscripcionJPARepository.findIdByUsuarioIdAndActividadId(
+            UUID.fromString(usuarioId),
+            UUID.fromString(actividadId) 
+        ).toString();
     }
 
     public boolean existsById(String id) {

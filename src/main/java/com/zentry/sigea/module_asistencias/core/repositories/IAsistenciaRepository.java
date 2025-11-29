@@ -12,5 +12,7 @@ public interface IAsistenciaRepository {
     List<AsistenciaDomainEntity> findBySesionId(String sesionId);
     List<AsistenciaDomainEntity> findBySesionIdAndPresente(String sesionId, Boolean presente);
     boolean existsById(String id);
+    public void saveAll(List<AsistenciaDomainEntity> listAsistenciaDomainEntities);
+
+    public List<String> findIdsByInscripcionId(String inscripcionId);
 }
-    

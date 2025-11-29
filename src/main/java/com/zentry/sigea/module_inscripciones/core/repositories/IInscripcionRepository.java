@@ -14,7 +14,9 @@ public interface IInscripcionRepository {
     public List<InscripcionDomainEntity> findByUsuarioId(String usuarioId);
     public List<InscripcionDomainEntity> findByActividadId(String actividadId);
     public List<InscripcionDomainEntity> findAll();
+    public List<String> findIdByListActividadIds(List<String> listActividadIds);
     public Optional<InscripcionDomainEntity> findByUsuarioIdAndActividadId(String usuarioId, String actividadId);
+    public String findIdByUsuarioIdAndActividadId(String usuarioId, String actividadId);
     public List<InscripcionDomainEntity> findByEstadoInscripcionId(String estadoId);
     public boolean existsByUsuarioIdAndActividadId(String usuarioId, String actividadId);
     public boolean existsById(String id);

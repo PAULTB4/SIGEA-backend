@@ -35,4 +35,20 @@ public class RolDomainEntity {
     public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
     }
+
+    public static RolDomainEntity create(
+        String nombreRol , 
+        String descripcion
+    ){
+        LocalDateTime nowLocalDateTime = LocalDateTime.now();
+
+        RolDomainEntity rolDomainEntity = new RolDomainEntity();
+
+        rolDomainEntity.setNombreRol(nombreRol);
+        rolDomainEntity.setDescripcion(descripcion);
+        rolDomainEntity.setCreateAt(nowLocalDateTime);
+        rolDomainEntity.setUpdateAt(nowLocalDateTime);
+
+        return rolDomainEntity;
+    }
 }

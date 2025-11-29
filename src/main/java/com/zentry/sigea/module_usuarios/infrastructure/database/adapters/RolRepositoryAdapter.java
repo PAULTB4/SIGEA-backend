@@ -21,6 +21,12 @@ public class RolRepositoryAdapter implements IRolRepository{
         this.rolJPARepository = rolJPARepository;
     }
 
+    public void save(RolDomainEntity rolDomainEntity){
+        rolJPARepository.save(
+            RolMapper.toEntity(rolDomainEntity)
+        );
+    }
+
     public List<RolDomainEntity> findAll(){
         return rolJPARepository.findAll()
             .stream()
@@ -31,5 +37,16 @@ public class RolRepositoryAdapter implements IRolRepository{
     public Optional<RolDomainEntity> findById(String id){
         return rolJPARepository.findById(UUID.fromString(id))
             .map(r -> RolMapper.toDomain(r));
+    }
+
+    public Optional<RolDomainEntity> findByNombreRol(String nombreRol){
+        return rolJPARepository.findByNombreRol(nombreRol)
+            .map(r -> RolMapper.toDomain(r));
+    }
+
+    public String findIdByNombreRol(String nombreRol){
+        return rolJPARepository.findIdByNombreRol(nombreRol)
+            .map(id -> id.toString())
+            .orElse(null);
     }
 }

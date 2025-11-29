@@ -56,7 +56,27 @@ public class AsistenciaRepositoryAdapter implements IAsistenciaRepository {
         );
     }
 
-    @Override
+    public void saveAll(List<AsistenciaDomainEntity> listAsistenciaDomainEntities){
+        asistenciaJPARepository.saveAll(
+            listAsistenciaDomainEntities.stream()
+                .map((ad) -> {
+                    InscripcionEntity inscripcionEntity = inscripcionJPARepository.findById(
+                        UUID.fromString(ad.getInscripcionId())
+                    ).orElse(null);
+
+                    SesionEntity sesionEntity = sesionJPARepository.findById(
+                        UUID.fromString(ad.getSesionId())
+                    ).orElse(null);
+
+                    return AsistenciaMapper.toEntity(
+                        ad, 
+                        sesionEntity, 
+                        inscripcionEntity
+                    );
+                }).collect(Collectors.toList())
+        );
+    }
+
     public Optional<AsistenciaDomainEntity> findById(String id){
         return asistenciaJPARepository.findById(UUID.fromString(id))
             .map(AsistenciaMapper::toDomain);
@@ -88,8 +108,15 @@ public class AsistenciaRepositoryAdapter implements IAsistenciaRepository {
             .collect(Collectors.toList());
     }
 
-    @Override
-    public boolean existsById(String id) {
+    public List<String> findIdsByInscripcionId(String inscripcionId){
+        return asistenciaJPARepository.findIdsByInscripcionId(
+            UUID.fromString(inscripcionId)
+        ).stream()
+        .map(Object::toString)
+        .collect(Collectors.toList());
+    }
+
+    public boolean existsById(String id){
         return asistenciaJPARepository.existsById(UUID.fromString(id));
     }
 }

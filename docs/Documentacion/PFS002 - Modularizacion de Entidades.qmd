@@ -1,0 +1,163 @@
+---
+title: "PFS002 - Modularización y Agrupación de Entidades"
+author: "Equipo de Arquitectura - SIGEA"
+format:
+  pdf:
+    toc: true
+    toc-depth: 3
+    toc-title: "Índice"
+  html:
+    toc-depth: 5
+    toc: true
+    toc-location: left
+    number-sections: false
+    toc-expand: true
+    toc-title: "Tabla de Contenidos"
+  md:
+    toc: true
+    number-sections: false
+    toc-depth: 5
+---
+
+# PFS002 - Modularización y Agrupación de Entidades
+
+## Propósito
+Este documento propone una estrategia práctica para organizar y agrupar las entidades del repositorio SIGEA en módulos lógicos. Está pensado para que el equipo de desarrollo tenga una guía clara al momento de implementar, refactorizar o preparar extracción de módulos.
+
+## Resumen ejecutivo
+- Objetivo: reducir acoplamiento, aumentar cohesión y facilitar despliegue/entrega por área funcional.
+- Enfoque: basarse en bounded contexts y responsabilidades de dominio (Actividades, Sesiones, Inscripciones, Usuarios, Pagos, Notificaciones, Certificados, Informes, Catálogos).
+- Entregable: mapa de entidades → módulos, convenciones de paquete, recomendaciones de migración y pruebas.
+
+## Entidades detectadas (fuente: `infrastructure.database.entities`)
+- ActividadEntity
+- SesionEntity
+- InscripcionEntity
+- CertificadoEntity
+- InformeEntity
+- PagoEntity
+- MetodoPagoEntity
+- EstadoPagoEntity
+- EstadoInscripcionEntity
+- EstadoActividadEntity
+- EstadoCertificadoEntity
+- EstadoNotificacionEntity
+- NotificacionEntity
+- TipoActividadEntity
+- TipoInformeEntity
+- TipoNotificacionEntity
+- TipoValidadorEntity
+- ValidacionEntity
+- UsuarioEntity
+- UsuarioRolEntity
+- UsuarioTelefonoEntity
+- RolEntity
+- AsistenciaEntity
+
+> Nota: La lista anterior viene del paquete de entidades del código; antes de extraer módulos verifica duplicados (algunos entitites se repiten en distintos paquetes) y unifica la fuente de verdad.
+
+## Propuesta de módulos y responsabilidades
+A continuación la propuesta para cada módulo, con las entidades que deberían pertenecer y su responsabilidad.
+
+### 1) módulo `actividades`
+- Entidades: `ActividadEntity`, `TipoActividadEntity`, `EstadoActividadEntity`.
+- Responsabilidad: CRUD de actividades, gestión de estados y tipos, reglas de negocio (fechas, capacidad, organizador).
+- Contrato: exponer puertos para obtener actividad por id y validaciones (por ejemplo `ActividadService.existsById(Long)`).
+
+### 2) módulo `sesiones`
+- Entidades: `SesionEntity` (y mappers / DTOs locales).
+- Responsabilidad: programar sesiones que pertenecen a una actividad (Actividad 1..N Sesiones). Mantener `actividadId` como referencia externa cuando la actividad viva en otro módulo.
+- Nota: Si se desea integridad referencial en BD (FK), mantener FK en la base cuando ambos objetos estén en la misma base de datos; si se separan en deploys distintos, validar existencia de actividad vía puerto.
+
+### 3) módulo `inscripciones`
+- Entidades: `InscripcionEntity`, `EstadoInscripcionEntity`.
+- Responsabilidad: inscribir participantes, gestionar transiciones (pendiente → confirmado → anulado), reglas de cupo.
+
+### 4) módulo `usuarios` (identidad)
+- Entidades: `UsuarioEntity`, `UsuarioRolEntity`, `UsuarioTelefonoEntity`, `RolEntity`.
+- Responsabilidad: gestión de identidad, perfiles, roles y autorización mínima. Debe ofrecer API para verificar datos de usuario.
+
+### 5) módulo `pagos`
+- Entidades: `PagoEntity`, `MetodoPagoEntity`, `EstadoPagoEntity`.
+- Responsabilidad: registrar pagos, conciliación y emisión de eventos (pago aprobado) que impacten inscripciones o certificados.
+
+### 6) módulo `notificaciones`
+- Entidades: `NotificacionEntity`, `EstadoNotificacionEntity`, `TipoNotificacionEntity`.
+- Responsabilidad: enviar emails/SMS/in-app, retries y trazabilidad de envíos.
+
+### 7) módulo `certificados`
+- Entidades: `CertificadoEntity`, `EstadoCertificadoEntity`.
+- Responsabilidad: generación y gestión de certificados post-condiciones (asistencia/pago/validaciones).
+
+### 8) módulo `informes`
+- Entidades: `InformeEntity`, `TipoInformeEntity`.
+- Responsabilidad: generación de informes por actividad/periodo/usuario; exportación y programación de jobs.
+
+### 9) módulo `catalogos` (shared)
+- Entidades: `TipoValidadorEntity`, `ValidacionEntity`, y otras tablas maestras.
+- Responsabilidad: servir catálogos (maestras) con contratos estables; evitar convertirlo en "cajón de sastre".
+
+## Convenciones de paquetes y estructura sugerida
+Para mantener coherencia entre módulos proponemos la siguiente convención de paquetes:
+
+```
+com.zentry.sigea.modules.<modulo>.core         // dominio (entidades de negocio, agregados)
+com.zentry.sigea.modules.<modulo>.services     // casos de uso / service layer
+com.zentry.sigea.modules.<modulo>.infrastructure // repositorios, mappers, adaptadores (JPA)
+com.zentry.sigea.modules.<modulo>.presentation // controllers, DTOs, adaptadores de entrada
+```
+
+Patrones:
+- Ports & Adapters (Hexagonal): definir interfaces en `core` (puertos) e implementar en `infrastructure`.
+- Naming: `*Entity` para persistencia; modelo de dominio (sin sufijo) para lógica y casos de uso.
+
+## Integridad referencial y estrategia de referencias
+- En entornos monolíticos: usar FK en la BD para garantizar integridad.
+- En entornos modulares/servicios separados: almacenar `actividad_id` en `sesion` y validar mediante servicio/puerto a `actividades` (sin FK física). Alternativa: usar eventos para sincronizar proyecciones.
+
+## Migración práctica (pasos para extraer un módulo, ejemplo: `sesiones`)
+1. Añadir interfaces (puertos) para el acceso a sesiones/actividades dentro del monolito.
+2. Refactorizar llamadas directas a repositorios hacia los puertos.
+3. Copiar las clases del módulo (`core` + `infrastructure` + `presentation`) a un nuevo submódulo (Maven/Gradle) como ejemplo.
+4. Implementar adaptadores inicialmente reutilizando la misma DB (shared DB) y pruebas de integración.
+5. Cambiar gradualmente la dependencia para que el módulo `sesiones` use solo sus puertos (y API del módulo `actividades` si es necesario).
+6. Desplegar y validar; migrar datos si se separan las bases.
+
+## Pruebas y CI
+- Cada módulo con su suite de pruebas (unitarias y de integración).
+- En CI usar Testcontainers para Postgres para asegurar compatibilidad con producción.
+- Para pruebas rápidas en desarrollo usar H2 en perfil `dev` (solo local), pero en CI usar Postgres en contenedores.
+
+## Recomendaciones operativas y de equipo
+- Asignar un propietario por módulo (dueño del dominio y de las decisiones del API).
+- Documentar contratos (OpenAPI) y versionarlos.
+- Evitar dependencias cíclicas entre módulos.
+- Usar eventos de dominio para notificar cambios entre módulos (p. ej. pago confirmado → inscripciones).
+
+## Checklist mínimo antes de extraer un módulo
+- [ ] Definir contratos/puertos estables.
+- [ ] Añadir pruebas unitarias para lógica de dominio.
+- [ ] Añadir pruebas de integración contra una DB real en CI (Testcontainers).
+- [ ] Documentar Public API (OpenAPI) y casos de uso prioritarios.
+- [ ] Plan de migración de datos si la BD se separa.
+
+## Ejemplo de contrato simple (puerto) para `actividades`
+```java
+public interface ActividadPort {
+    boolean existsById(Long actividadId);
+    Optional<Actividad> findById(Long actividadId);
+}
+```
+
+En `sesiones` se usa `ActividadPort` para validar `actividadId` antes de crear una sesión.
+
+## Notas finales
+- Esta guía está pensada como punto de partida; adapta límites según el equipo, ritmo y necesidades operativas.
+- Si desean, puedo:
+  - generar un `.md` o `.pdf` final listo para compartir,
+  - crear un ejemplo de módulo Maven para `sesiones` y mover las clases como plantilla,
+  - dibujar un diagrama de paquetes (DOT/PNG) para incluir en la documentación.
+
+
+---
+Documento creado automáticamente para el equipo de desarrollo.

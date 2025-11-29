@@ -17,6 +17,7 @@ public class EstadoActividadDomainEntity {
 
         return estadoActividadDomainEntity;
     }
+
     public String getEstadoActividadId() {
         return estadoActividadId;
     }

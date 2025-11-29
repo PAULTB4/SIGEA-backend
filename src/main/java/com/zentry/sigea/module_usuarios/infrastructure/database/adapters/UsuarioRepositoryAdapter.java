@@ -43,4 +43,10 @@ public class UsuarioRepositoryAdapter implements IUsuarioRepository {
         return usuarioJPARepository.findByCorreo(correo)
             .map(u -> UsuarioMapper.toDomain(u));
     }
+
+    public String findIdByCorreo(String correo){
+        return usuarioJPARepository.findIdByCorreo(correo)
+            .map(id -> id.toString())
+            .orElse(null);
+    }
 }

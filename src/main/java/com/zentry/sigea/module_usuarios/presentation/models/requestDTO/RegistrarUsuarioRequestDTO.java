@@ -3,6 +3,7 @@ package com.zentry.sigea.module_usuarios.presentation.models.requestDTO;
 import java.util.List;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -33,7 +34,7 @@ public class RegistrarUsuarioRequestDTO {
     @Size(min = 2 , max = 8 , message = "La extension telefonica debe tener entre 2 y 8 caracteres.")
     private String extensionTelefonica;
 
-    @NotNull(message = "Debe proporcionar al menos un rol al usuario.")
+    @NotEmpty(message = "Debe proporcionar al menos un rol al usuario.")
     private List<String> rolId;
 
     public String getNombres() {

@@ -11,6 +11,7 @@ public interface IActividadRespository {
     public Optional<ActividadDomainEntity> findById(String id);
     public List<ActividadDomainEntity> findByOrganizadorId(String organizadorId);
     public List<ActividadDomainEntity> findAll();
+    public List<String> findAllIds();
     public List<ActividadDomainEntity> findByEstadoActividadId(String statusId);
     public List<ActividadDomainEntity> findByTipoActividadId(String tipoActividadId);
     public List<ActividadDomainEntity> findByDateRange(LocalDate startDate , LocalDate endDate);

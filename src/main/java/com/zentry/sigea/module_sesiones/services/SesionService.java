@@ -1,11 +1,15 @@
 package com.zentry.sigea.module_sesiones.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.zentry.sigea.module_inscripciones.core.repositories.IInscripcionRepository;
+import com.zentry.sigea.module_notificaciones.events.domain.SesionCreadaEvent;
 import com.zentry.sigea.module_sesiones.core.entities.SesionDomainEntity;
 import com.zentry.sigea.module_sesiones.presentacion.models.CrearSesionRequest;
 import com.zentry.sigea.module_sesiones.presentacion.models.SesionRequest;
@@ -30,23 +34,59 @@ public class SesionService implements ISesionService {
     private final ListarSesionesUseCase listarSesionesUseCase;
     private final ActualizarSesionUseCase actualizarSesionUseCase;
     private final EliminarSesionUseCase eliminarSesionUseCase;
+    private final ApplicationEventPublisher eventPublisher;
+    private final IInscripcionRepository inscripcionRepository;
 
     public SesionService(
         CrearSesionUseCase crearSesionUseCase,
         ListarSesionesUseCase listarSesionesUseCase,
         ActualizarSesionUseCase actualizarSesionUseCase,
-        EliminarSesionUseCase eliminarSesionUseCase
+        EliminarSesionUseCase eliminarSesionUseCase,
+        ApplicationEventPublisher eventPublisher,
+        IInscripcionRepository inscripcionRepository
     ) {
         this.crearSesionUseCase = crearSesionUseCase;
         this.listarSesionesUseCase = listarSesionesUseCase;
         this.actualizarSesionUseCase = actualizarSesionUseCase;
         this.eliminarSesionUseCase = eliminarSesionUseCase;
+        this.eventPublisher = eventPublisher;
+        this.inscripcionRepository = inscripcionRepository;
     }
 
     @Override
     public SesionResponse crearSesion(CrearSesionRequest request) {
-        SesionDomainEntity sesionCreada = crearSesionUseCase.execute(request);
-        return SesionResponse.fromDomain(sesionCreada);
+        try {
+            // Crear la sesión
+            SesionDomainEntity sesionCreada = crearSesionUseCase.execute(request);
+            
+            if (sesionCreada == null || sesionCreada.getId() == null) {
+                throw new IllegalStateException("La sesión no fue creada correctamente - ID es null");
+            }
+            
+            // Obtener usuarios inscritos en la actividad para notificarles
+            List<String> usuariosInscritos = inscripcionRepository
+                .findByActividadId(request.getActividadId())
+                .stream()
+                .map(inscripcion -> inscripcion.getUsuarioId())
+                .collect(Collectors.toList());
+            
+            // Solo publicar evento si hay usuarios inscritos
+            if (!usuariosInscritos.isEmpty()) {
+                eventPublisher.publishEvent(new SesionCreadaEvent(
+                    sesionCreada.getId(),
+                    request.getActividadId(),
+                    sesionCreada.getTitulo(),
+                    sesionCreada.getFechaSesion(),
+                    usuariosInscritos,
+                    LocalDateTime.now()
+                ));
+            }
+            
+            return SesionResponse.fromDomain(sesionCreada);
+        } catch (Exception e) {
+            // Log detallado del error
+            throw new RuntimeException("Error al crear sesión: " + e.getMessage(), e);
+        }
     }
 
     @Override
