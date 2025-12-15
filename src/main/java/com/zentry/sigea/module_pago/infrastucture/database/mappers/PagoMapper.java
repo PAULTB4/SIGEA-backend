@@ -35,6 +35,7 @@ public class PagoMapper {
         entity.setMonto(domain.getMonto());
         entity.setFechaPago(domain.getFechaPago());
         entity.setReferenciaExterna(domain.getReferenciaExt());
+        entity.setUrlMercadoPago(domain.getUrlMercadoPago());
 
         // Relaciones correctas
         entity.setInscripcion(inscripcion);
@@ -59,6 +60,7 @@ public class PagoMapper {
         domain.setMoneda(entity.getMoneda());
         domain.setFechaPago(entity.getFechaPago());
         domain.setReferenciaExt(entity.getReferenciaExterna());
+        domain.setUrlMercadoPago(entity.getUrlMercadoPago());
 
         domain.setMetodoId(entity.getMetodoPago().getIdMetodoPago().toString());
         domain.setEstadoId(entity.getEstadoPago().getIdEstadoPago().toString());

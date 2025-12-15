@@ -11,6 +11,21 @@ import com.zentry.sigea.module_pago.presentation.models.requestDTO.PagoRequest;
 
 @Component
 public class CrearPagoUseCase {
+
+        // Actualiza la URL de MercadoPago en el último pago creado (por fecha)
+        public void actualizarUrlMercadoPagoEnUltimoPago(String urlMercadoPago) {
+            // Buscar el último pago creado (por fecha de pago más reciente)
+            var pagos = pagoRepository.findAll();
+            if (pagos == null || pagos.isEmpty()) return;
+            // Buscar el pago con la fecha más reciente
+            var ultimoPago = pagos.stream()
+                .max((a, b) -> a.getFechaPago().compareTo(b.getFechaPago()))
+                .orElse(null);
+            if (ultimoPago == null) return;
+            // Actualizar la URL
+            ultimoPago.setUrlMercadoPago(urlMercadoPago);
+            pagoRepository.save(ultimoPago);
+        }
     private final IPagoRepository pagoRepository;
     private final IMetodoPagoRepository metodoPagoRepository;
     private final IEstadoPagoRepository estadoPagoRepository;

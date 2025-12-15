@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 public class PagoDomainEntity {
+        private String urlMercadoPago;
     private String idPago;
     private String inscripcionId;
     private BigDecimal monto;
@@ -112,6 +113,14 @@ public class PagoDomainEntity {
 
     public void setUsuarioDni(String usuarioDni) {
         this.usuarioDni = usuarioDni;
+    }
+
+    public String getUrlMercadoPago() {
+        return urlMercadoPago;
+    }
+
+    public void setUrlMercadoPago(String urlMercadoPago) {
+        this.urlMercadoPago = urlMercadoPago;
     }
 
     public static PagoDomainEntity create(

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 public class PagoResponse {
+        private String urlMercadoPago;
     private String preferenceId;
     private String initPoint;
     private String sandboxInitPoint;
@@ -39,6 +40,7 @@ public class PagoResponse {
         this.usuarioId = entity.getUsuarioId();
         this.actividadId = entity.getActividadId();
         this.usuarioDni = entity.getUsuarioDni();
+        this.urlMercadoPago = entity.getUrlMercadoPago();
     }
 
     public static PagoResponseBuilder builder() {
@@ -160,6 +162,14 @@ public class PagoResponse {
 
     public String getUsuarioDni() {
         return usuarioDni;
+    }
+
+    public String getUrlMercadoPago() {
+        return urlMercadoPago;
+    }
+
+    public void setUrlMercadoPago(String urlMercadoPago) {
+        this.urlMercadoPago = urlMercadoPago;
     }
 
     public void setUsuarioDni(String usuarioDni) {

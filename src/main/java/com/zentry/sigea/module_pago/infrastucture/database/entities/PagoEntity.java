@@ -58,4 +58,8 @@ public class PagoEntity {
     @Column(name = "referencia_ext", length = 120)
     private String referenciaExterna; // ID de pago en Mercado Pago
 
+    // URL de Mercado Libre/Mercado Pago generada al crear el pago
+    @Column(name = "url_mercado_pago", length = 512)
+    private String urlMercadoPago;
+
 }

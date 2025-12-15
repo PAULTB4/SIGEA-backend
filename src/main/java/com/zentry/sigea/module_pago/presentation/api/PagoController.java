@@ -55,7 +55,10 @@ public class PagoController {
     }, tags = { "Crear" })
     public Object pagarConYape(@RequestBody PagoRequest request) {
         log.info("Iniciando pago con Yape para monto: {}", request.monto());
-        pagoService.guardarPago(request);
+        // Guardar los datos del pago en la base de datos antes de procesar el pago
+        var pagoGuardado = pagoService.guardarPago(request);
+        log.info("Pago guardado en la base de datos: {}", pagoGuardado);
+        // Procesar el pago con Yape
         return pagoService.pagarConYape(request.monto(), request.descripcion());
     }
 

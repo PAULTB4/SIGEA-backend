@@ -55,23 +55,23 @@ public class PagoService implements IPago {
             // Crear item del producto/servicio
             List<PreferenceItemRequest> items = new ArrayList<>();
             PreferenceItemRequest item = PreferenceItemRequest.builder()
-                    .id("001")
-                    .title("Pago con Yape - Servicio SIGEA")
-                    .description(descripcion)
-                    .pictureUrl("https://via.placeholder.com/300x200.png?text=SIGEA")
-                    .categoryId("services")
-                    .quantity(1)
-                    .currencyId("PEN") // Soles peruanos
-                    .unitPrice(monto) // Monto dinámico
-                    .build();
+                .id("001")
+                .title("Pago con Yape - Servicio SIGEA")
+                .description(descripcion)
+                .pictureUrl("https://via.placeholder.com/300x200.png?text=SIGEA")
+                .categoryId("services")
+                .quantity(1)
+                .currencyId("PEN") // Soles peruanos
+                .unitPrice(monto) // Monto dinámico
+                .build();
             items.add(item);
 
             // URLs de retorno
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                    .success("https://brennisc.github.io/url_sigea?status=success")
-                    .pending("https://brennisc.github.io/url_sigea?status=pending")
-                    .failure("https://brennisc.github.io/url_sigea?status=failure")
-                    .build();
+                .success("https://brennisc.github.io/url_sigea?status=success")
+                .pending("https://brennisc.github.io/url_sigea?status=pending")
+                .failure("https://brennisc.github.io/url_sigea?status=failure")
+                .build();
 
             // Configurar métodos de pago (solo Yape)
             List<PreferencePaymentMethodRequest> excludedPaymentMethods = new ArrayList<>();
@@ -82,27 +82,37 @@ public class PagoService implements IPago {
             excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("diners").build());
             excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("cabal").build());
             PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
-                    .excludedPaymentMethods(excludedPaymentMethods)
-                    .installments(1) // Solo 1 cuota para Yape
-                    .build();
+                .excludedPaymentMethods(excludedPaymentMethods)
+                .installments(1) // Solo 1 cuota para Yape
+                .build();
 
             // Información del pagador
             PreferencePayerRequest payer = PreferencePayerRequest.builder()
-                    .name("compradortest")
-                    .email("brennisbenjaminn@gmail.com")
-                    .build();
+                .name("compradortest")
+                .email("brennisbenjaminn@gmail.com")
+                .build();
 
             // Crear la preferencia
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
-                    .items(items)
-                    .backUrls(backUrls)
-                    .paymentMethods(paymentMethods)
-                    .payer(payer)
-                    .autoReturn("approved")
-                    .externalReference("SIGEA-" + System.currentTimeMillis())
-                    .build();
+                .items(items)
+                .backUrls(backUrls)
+                .paymentMethods(paymentMethods)
+                .payer(payer)
+                .autoReturn("approved")
+                .externalReference("SIGEA-" + System.currentTimeMillis())
+                .build();
 
             Preference preference = client.create(preferenceRequest);
+
+            // Guardar la URL de MercadoPago en la BD (actualizar el pago más reciente del usuario)
+            // Aquí deberías tener el ID del pago creado previamente, por simplicidad se asume que es el último
+            // Este paso debe adaptarse a tu lógica real de asociación
+            try {
+            // Suponiendo que tienes un método para actualizar la URL en el pago más reciente
+            crearPagoUseCase.actualizarUrlMercadoPagoEnUltimoPago(preference.getInitPoint());
+            } catch (Exception ex) {
+            log.error("No se pudo actualizar la URL de MercadoPago en la BD: {}", ex.getMessage());
+            }
 
             // Preparar respuesta con URLs
             Map<String, Object> response = new HashMap<>();
