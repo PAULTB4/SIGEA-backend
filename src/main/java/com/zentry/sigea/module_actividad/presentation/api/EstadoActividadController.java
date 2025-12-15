@@ -58,12 +58,8 @@ public class EstadoActividadController {
     }
 
     @GetMapping("/listar")
-    @PreAuthorize("hasRole('ROLE_ORGANIZADOR')")
     @Operation(
         summary = "Listar estados de actividad",
-        security = @SecurityRequirement(
-            name = "organizadorJWT"
-            ),
         tags = {"Listar"}
     )
     public ResponseEntity<List<EstadoActividadResponse>> listarEstadoActividad() {

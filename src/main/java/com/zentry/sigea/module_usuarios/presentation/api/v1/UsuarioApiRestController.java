@@ -11,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -199,7 +201,42 @@ public class UsuarioApiRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new GeneralResponseDTO<>(
                     true, 
-                    "Ocurrio un error al cerrar sesion.", 
+                    e.getMessage(), 
+                    null
+                )
+            );
+        }
+    }
+
+    @DeleteMapping("/eliminar-usuario/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR' , 'ROLE_ORGANIZADOR' , 'ROLE_PARTICIPANTE')")
+    @Operation(
+        summary = "Eliminar un usuario por su id",
+        security = {
+            @SecurityRequirement(name = "administradorJWT"),
+            @SecurityRequirement(name = "organizadorJWT"),
+            @SecurityRequirement(name = "participanteJWT")
+        },
+        tags = {"Eliminar"}
+    )
+    public ResponseEntity<GeneralResponseDTO<String>> eliminarUsuario(
+        @PathVariable("id") String usuarioId
+    ){
+        try {
+            String responseMessage = usuarioService.eliminarUsuario(usuarioId);
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                new GeneralResponseDTO<>(
+                    true, 
+                    responseMessage, 
+                    null
+                )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new GeneralResponseDTO<>(
+                    true, 
+                    e.getMessage(), 
                     null
                 )
             );

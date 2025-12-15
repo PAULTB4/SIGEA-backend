@@ -80,16 +80,14 @@ public class OpenApiConfig {
                 .build();
     }
 
-
     @Bean
     public GroupedOpenApi actividadesApi() {
         return GroupedOpenApi.builder()
                 .group("Modulo Actividades")
                 .pathsToMatch(
-                    "/api/v*/actividades/**" , 
-                    "/api/v*/estados-actividad/**",
-                    "/api/v*/tipos-actividad/**"
-                )
+                        "/api/v*/actividades/**",
+                        "/api/v*/estados-actividad/**",
+                        "/api/v*/tipos-actividad/**")
                 .build();
     }
 
@@ -98,9 +96,8 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("Modulo Certificaciones")
                 .pathsToMatch(
-                    "/api/v*/certificaciones/**",
-                    "/api/v*/estado-certificado/**"
-                )
+                        "/api/v*/certificaciones/**",
+                        "/api/v*/estado-certificado/**")
                 .build();
     }
 
@@ -109,9 +106,8 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("Modulo Informes")
                 .pathsToMatch(
-                    "/api/v*/informes/**" ,
-                    "/api/v*/tipos-informe"
-                )
+                        "/api/v*/informes/**",
+                        "/api/v*/tipos-informe")
                 .build();
     }
 
@@ -120,9 +116,8 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("Modulo Inscripciones")
                 .pathsToMatch(
-                    "/api/v*/inscripciones/**",
-                    "/api/v*/estados-inscripcion/**"
-                )
+                        "/api/v*/inscripciones/**",
+                        "/api/v*/estados-inscripcion/**")
                 .build();
     }
 
@@ -131,10 +126,9 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("Modulo Notificaciones")
                 .pathsToMatch(
-                    "/api/v*/notificaciones/**",
-                    "/api/v*/estados-notificacion/**",
-                    "/api/v*/tipos-notificacion/**"
-                )
+                        "/api/v*/notificaciones/**",
+                        "/api/v*/estados-notificacion/**",
+                        "/api/v*/tipos-notificacion/**")
                 .build();
     }
 
@@ -151,8 +145,7 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("Modulo Usuarios")
                 .pathsToMatch(
-                    "/api/v*/usuarios/**"
-                )
+                        "/api/v*/usuarios/**")
                 .build();
     }
 
@@ -165,9 +158,18 @@ public class OpenApiConfig {
                     "/" , 
                     "/api/v*/actividades/listar" , 
                     "/api/v*/actividades/obtener/**" , 
+                    "/api/v*/actividad/banner/imagen/**",
+
                     "/api/v*/{any}/health",
+
                     "/api/v*/usuarios/participante/registrar",
-                    "/api/v*/usuarios/validar-correo/**"
+                    "/api/v*/usuarios/validar-correo/**",
+
+                    "/api/v*/sesiones/listar",
+                    "/api/v*/sesiones/obtener/**",
+
+                    "/api/v*/tipos-actividad/listar",
+                    "/api/v*/estados-actividad/listar"
                 )
                 .build();
     }
@@ -177,8 +179,18 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("Modulo Banners de Actividades")
                 .pathsToMatch(
-                    "/api/v*/actividad/banner/**"
-                )
+                        "/api/v1/actividad/banner/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi pagoApi() {
+        return GroupedOpenApi.builder()
+                .group("Modulo Pagos")
+                .pathsToMatch(
+                        "/api/v1/pagos/**",
+                        "/api/v1/estado-pago/**",
+                        "/api/v1/metodo-pago/**")
                 .build();
     }
 }

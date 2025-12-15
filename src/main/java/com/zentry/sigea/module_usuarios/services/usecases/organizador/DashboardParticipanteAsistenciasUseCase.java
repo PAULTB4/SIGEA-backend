@@ -1,4 +1,4 @@
-package com.zentry.sigea.module_usuarios.services.usecases.administrador;
+package com.zentry.sigea.module_usuarios.services.usecases.organizador;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -65,12 +65,8 @@ public class TipoActividadController {
      * Listar todos los tipos de actividad
     */
     @GetMapping("/listar")
-    @PreAuthorize("hasRole('ROLE_ORGANIZADOR')")
     @Operation(
         summary = "Listar los tipos de actividad.",
-        security = @SecurityRequirement(
-            name = "organizadorJWT"
-            ),
         tags = {"Listar"}
     )
     public ResponseEntity<List<TipoActividadResponse>> listarTiposActividad() {

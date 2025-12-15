@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.zentry.sigea.module_usuarios.services.serviceDTO.DashboardParticipanteAsistenciasServiceDTO;
 import com.zentry.sigea.module_usuarios.services.serviceDTO.RegistrarAsistenciaServiceDTO;
-import com.zentry.sigea.module_usuarios.services.usecases.administrador.DashboardParticipanteAsistenciasUseCase;
+import com.zentry.sigea.module_usuarios.services.usecases.organizador.DashboardParticipanteAsistenciasUseCase;
 import com.zentry.sigea.module_usuarios.services.usecases.organizador.RegistrarAsistenciaMasivaUseCase;
 
 @Service

@@ -3,6 +3,9 @@ package com.zentry.sigea.module_usuarios.infrastructure.database.entities;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,6 +38,7 @@ public class TokenUsuarioEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id" , nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UsuarioEntity usuario;
 
     @Column(name = "expiry_date" , columnDefinition = "TIMESTAMP", nullable = false)

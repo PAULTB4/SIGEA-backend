@@ -12,4 +12,5 @@ public interface IUsuarioRolRepository {
     public void save(String usuarioId , String rolId);
     public void saveOneUserWithAllRolesId(String usuarioId , List<String> listRolesId);
     public List<UsuarioDomainEntity> findAllUsuariosByNombreRol(String nombreRol);
+    public void update(String usuarioId , String newRolId , String oldRolId);
 }

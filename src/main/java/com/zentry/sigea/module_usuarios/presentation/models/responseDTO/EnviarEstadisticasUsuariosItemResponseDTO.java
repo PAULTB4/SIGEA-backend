@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ObtenerUsuarioResponseDTO {
+public class EnviarEstadisticasUsuariosItemResponseDTO {
     private String id;
     private String nombres;
     private String apellidos;
@@ -16,6 +16,7 @@ public class ObtenerUsuarioResponseDTO {
     private Boolean correoVerificado;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
     private String telefono;
     private String extensionTelefonica;
 }

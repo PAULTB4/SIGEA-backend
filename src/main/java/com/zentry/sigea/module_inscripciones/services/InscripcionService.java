@@ -55,10 +55,16 @@ public class InscripcionService implements IInscripcion {
      * Publica automáticamente un evento que dispara la notificación
      */
     @Override
-    public String crearInscripcion(CrearInscripcionServiceDTO crearInscripcionServiceDTO) {
+    public boolean crearInscripcion(CrearInscripcionServiceDTO crearInscripcionServiceDTO) {
+
+
         String inscripcionId = crearInscripcionUseCase.execute(crearInscripcionServiceDTO);
         
         // Publicar evento para notificación automática
+        if (inscripcionId == null || inscripcionId.isEmpty()) {
+            return false;
+        }
+        
         eventPublisher.publishEvent(new InscripcionCreadaEvent(
             crearInscripcionServiceDTO.getUsuarioId(),
             crearInscripcionServiceDTO.getActividadId(),
@@ -66,7 +72,7 @@ public class InscripcionService implements IInscripcion {
             LocalDateTime.now()
         ));
         
-        return inscripcionId;
+        return true;
     }
 
     /**

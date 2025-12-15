@@ -32,8 +32,16 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    @Value("${sigea.public.frontend.domain}")
+    private String sigeaPublicFrontendDomain;
+
     @Value("${sigea.public.backend.domain}")
     private String sigeaPublicBackendDomain;
+
+    @Value("${sigea.allowed.origin.backend.localhost.path}")
+    private String sigeaAllowedOriginBakendLocalhostPath;
+    @Value("${sigea.allowed.origin.frontend.localhost.path}")
+    private String sigeaAllowedOriginFrontendLocalhostPath;
 
     public SecurityConfig(
         CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
@@ -61,7 +69,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                             "/api/v*/usuarios/auth/**", 
-                            "/api/v*/usuarios/validar-correo/**", // <-- Permitir validación de correo sin autenticación
                             "/" , 
                             "/v*/api-docs.yaml",
 
@@ -70,8 +77,11 @@ public class SecurityConfig {
                             "/api/v*/actividades/obtener/**",
                             "/api/v*/actividad/banner/imagen/**",
 
+                            "/api/v*/tipos-actividad/listar",
+                            "/api/v*/estados-actividad/listar",
+
                             "/api/v*/usuarios/participante/registrar",
-                            "/api/v*/usuarios/validar-correo/**",
+                            "/api/v*/usuarios/validar-correo/**", // <-- Permitir validación de correo sin autenticación
 
                             "/api/v*/sesiones/listar",
                             "/api/v*/sesiones/obtener/**",
@@ -103,10 +113,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of(
-            "http://localhost:3000",
-            "http://localhost:16001",
-            "https://sigea.zentrycorp.dev",
-            sigeaPublicBackendDomain
+            sigeaAllowedOriginBakendLocalhostPath,
+            sigeaAllowedOriginFrontendLocalhostPath,
+            sigeaPublicBackendDomain,
+            sigeaPublicFrontendDomain
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of(

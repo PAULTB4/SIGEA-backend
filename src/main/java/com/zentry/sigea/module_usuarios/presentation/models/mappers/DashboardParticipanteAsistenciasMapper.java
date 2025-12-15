@@ -24,18 +24,20 @@ public class DashboardParticipanteAsistenciasMapper {
         dashboardParticipanteAsistenciasResponseDTO.setSesionId(dashboardParticipanteAsistenciasServiceDTO.getSesionId());
 
         List<DashboardParticipanteAsistenciasItemResponseDTO> listDashboardParticipanteAsistenciasItemResponseDTOs = new ArrayList<>();
-        for(DashboardParticipanteAsistenciasItemServiceDTO itemServiceDTO : dashboardParticipanteAsistenciasServiceDTO.getListParticipantesInfo()){
-            DashboardParticipanteAsistenciasItemResponseDTO dashboardParticipanteAsistenciasItemResponseDTO = new DashboardParticipanteAsistenciasItemResponseDTO();
-
-            dashboardParticipanteAsistenciasItemResponseDTO.setInscripcionId(itemServiceDTO.getInscripcionId());
-            dashboardParticipanteAsistenciasItemResponseDTO.setFechaInscripcion(itemServiceDTO.getFechaInscripcion());
-            dashboardParticipanteAsistenciasItemResponseDTO.setNombresParticipante(itemServiceDTO.getNombresParticipante());
-            dashboardParticipanteAsistenciasItemResponseDTO.setCorreoParticipante(itemServiceDTO.getCorreoParticipante());
-            dashboardParticipanteAsistenciasItemResponseDTO.setPresente(itemServiceDTO.getPresente());
-        
-            listDashboardParticipanteAsistenciasItemResponseDTOs.add(dashboardParticipanteAsistenciasItemResponseDTO);
+        if(!dashboardParticipanteAsistenciasServiceDTO.getListParticipantesInfo().isEmpty()){
+            for(DashboardParticipanteAsistenciasItemServiceDTO itemServiceDTO : dashboardParticipanteAsistenciasServiceDTO.getListParticipantesInfo()){
+                DashboardParticipanteAsistenciasItemResponseDTO dashboardParticipanteAsistenciasItemResponseDTO = new DashboardParticipanteAsistenciasItemResponseDTO();
+    
+                dashboardParticipanteAsistenciasItemResponseDTO.setInscripcionId(itemServiceDTO.getInscripcionId());
+                dashboardParticipanteAsistenciasItemResponseDTO.setFechaInscripcion(itemServiceDTO.getFechaInscripcion());
+                dashboardParticipanteAsistenciasItemResponseDTO.setNombresParticipante(itemServiceDTO.getNombresParticipante());
+                dashboardParticipanteAsistenciasItemResponseDTO.setCorreoParticipante(itemServiceDTO.getCorreoParticipante());
+                dashboardParticipanteAsistenciasItemResponseDTO.setPresente(itemServiceDTO.getPresente());
+            
+                listDashboardParticipanteAsistenciasItemResponseDTOs.add(dashboardParticipanteAsistenciasItemResponseDTO);
+            }
+            dashboardParticipanteAsistenciasResponseDTO.setListParticipantesInfo(listDashboardParticipanteAsistenciasItemResponseDTOs);
         }
-        dashboardParticipanteAsistenciasResponseDTO.setListParticipantesInfo(listDashboardParticipanteAsistenciasItemResponseDTOs);
 
         return dashboardParticipanteAsistenciasResponseDTO;
     }

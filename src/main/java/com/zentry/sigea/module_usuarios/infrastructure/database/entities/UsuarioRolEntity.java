@@ -2,6 +2,9 @@ package com.zentry.sigea.module_usuarios.infrastructure.database.entities;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.zentry.sigea.module_usuarios.infrastructure.database.embedded.UsuarioRolId;
 
 import jakarta.persistence.Column;
@@ -36,11 +39,13 @@ public class UsuarioRolEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idUsuario")
     @JoinColumn(name = "usuario_id" , nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UsuarioEntity usuario;
 
     @ManyToOne(fetch = FetchType.LAZY) // carga la entidad relacionada solo cuando se necesita.
     @MapsId("idRol")
     @JoinColumn(name = "rol_id" , nullable = false) // define la FK
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private RolEntity rol;
 
     @Column(name = "asignado_en" , nullable = false , columnDefinition = "TIMESTAMP")

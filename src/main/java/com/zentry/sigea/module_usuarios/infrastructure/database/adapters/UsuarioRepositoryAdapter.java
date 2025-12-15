@@ -83,4 +83,8 @@ public class UsuarioRepositoryAdapter implements IUsuarioRepository {
     public String findPasswordHashById(String id){
         return usuarioJPARepository.findPasswordHashById(UUID.fromString(id));
     }
+
+    public void deleteById(String id){
+        usuarioJPARepository.deleteById(UUID.fromString(id));
+    }
 }

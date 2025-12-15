@@ -38,6 +38,7 @@ public class NotificacionEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UsuarioEntity usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)

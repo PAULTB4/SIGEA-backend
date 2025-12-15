@@ -118,13 +118,21 @@ MAIL_MIME_CHARSET={def: UTF-8}
 MEDIA_LOCATION={Ubicacion de almacenamiento de medios. def: ./uploads}
 
 # Dominios o Enlaces Publicos
-SIGEA_PUBLIC_BACKEND_DOMAIN={Dominio publico del Proyecto para configuración CORS}
+SIGEA_PUBLIC_BACKEND_DOMAIN={Dominio publico del Backend del Proyecto para configuración CORS}
+SIGEA_PUBLIC_FRONTEND_DOMAIN={Dominio publico del Frondent del Proyecto para configuración CORS}
+SIGEA_ALLOWED_ORIGIN_BACKEND_LOCALHOST_PATH={Dominio localhost del backend para configuracion CORS}
+SIGEA_ALLOWED_ORIGIN_FRONTEND_LOCALHOST_PATH={Dominio localhost del frontend para configuracion CORS}
+
 SIGEA_PUBLIC_BACKEND_REPOSITORY={Enlace al repositorio del proyecto}
 
 # Configuracion GCP recomendada para trabajar en local
 SPRING_CLOUD_GCP_SQL_ENABLED=false
 SPRING_CLOUD_GCP_PUBSUB_ENABLED=false
 SPRING_CLOUD_GCP_CORE_ENABLED=false
+
+# MecadoPago Variables
+MERCADO_PAGO_PUBLIC_KEY={Llave publica de MercadoPago}
+MERCADO_PAGO_ACCESS_TOKEN={Token de MercadoPago}
 ```
 
 Recuerda reemplazar con tus variables entre los  `{}`  .

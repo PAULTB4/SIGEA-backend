@@ -14,4 +14,5 @@ public interface IUsuarioRepository {
     public long countAllUsers();
     public void update(UsuarioDomainEntity usuarioDomainEntity , Boolean passwordMatches);
     public String findPasswordHashById(String id);
+    public void deleteById(String id);
 }

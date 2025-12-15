@@ -11,6 +11,7 @@ import com.zentry.sigea.module_usuarios.core.entities.UsuarioDomainEntity;
 import com.zentry.sigea.module_usuarios.core.repositories.IUsuarioRepository;
 import com.zentry.sigea.module_usuarios.core.repositories.IUsuarioRolRepository;
 import com.zentry.sigea.module_usuarios.presentation.models.responseDTO.LoginResponseDTO;
+import com.zentry.sigea.module_usuarios.services.usecases.EliminarUsuarioUseCase;
 import com.zentry.sigea.security.JwtBlacklistService;
 import com.zentry.sigea.security.JwtUtil;
 
@@ -37,13 +38,16 @@ public class UsuarioService {
     private final TokenUsuarioService tokenUsuarioService;
     private final JwtUtil jwtUtil;
 
+    private final EliminarUsuarioUseCase eliminarUsuarioUseCase;
+
     public UsuarioService(
         IUsuarioRepository usuarioRepository,
         IUsuarioRolRepository usuarioRolRepository,
         PasswordEncoder passwordEncoder,
         TokenUsuarioService tokenUsuarioService , 
         JwtUtil jwtUtil , 
-        JwtBlacklistService jwtBlacklistService
+        JwtBlacklistService jwtBlacklistService,
+        EliminarUsuarioUseCase eliminarUsuarioUseCase
 
     ){
         this.usuarioRepository = usuarioRepository;
@@ -52,6 +56,7 @@ public class UsuarioService {
         this.tokenUsuarioService = tokenUsuarioService;
         this.jwtUtil = jwtUtil;
         this.jwtBlacklistService = jwtBlacklistService;
+        this.eliminarUsuarioUseCase = eliminarUsuarioUseCase;
     }
 
     public LoginResponseDTO login(String correo , String password , Boolean rememberMe){
@@ -96,5 +101,9 @@ public class UsuarioService {
         } catch (Exception e) {
             return "El cierre de sesion fallo";
         }
+    }
+
+    public String eliminarUsuario(String usuarioId){
+        return eliminarUsuarioUseCase.execute(usuarioId);
     }
 }

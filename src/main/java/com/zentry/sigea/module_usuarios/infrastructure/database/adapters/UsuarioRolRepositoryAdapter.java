@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.zentry.sigea.module_usuarios.core.entities.RolDomainEntity;
 import com.zentry.sigea.module_usuarios.core.entities.UsuarioDomainEntity;
 import com.zentry.sigea.module_usuarios.core.repositories.IUsuarioRolRepository;
+import com.zentry.sigea.module_usuarios.infrastructure.database.entities.RolEntity;
 import com.zentry.sigea.module_usuarios.infrastructure.database.entities.UsuarioRolEntity;
 import com.zentry.sigea.module_usuarios.infrastructure.database.mappers.RolMapper;
 import com.zentry.sigea.module_usuarios.infrastructure.database.mappers.UsuarioMapper;
@@ -106,5 +107,25 @@ public class UsuarioRolRepositoryAdapter implements IUsuarioRolRepository {
             .stream()
             .map(UsuarioMapper::toDomain)
             .collect(Collectors.toList());
+    }
+
+    public void update(String usuarioId , String newRolId , String oldRolId){
+        List<UsuarioRolEntity> listUsuarioRolEntities = usuarioRolJPARepository.findById_IdUsuario(UUID.fromString(usuarioId));
+        if(listUsuarioRolEntities.isEmpty()){
+            throw new RuntimeException("No se encontro ningun usuario para el id especificado.");
+        }
+
+        if(newRolId.equals(oldRolId)){
+            throw new RuntimeException("No se puede seleccionar un rol que el usuario ya tiene.");
+        }
+        RolEntity rolEntity = rolJPARepository.findById(UUID.fromString(newRolId)).orElseThrow(
+            () -> new RuntimeException("No se encontro un rol para el id especificado.")
+        );
+
+        for(UsuarioRolEntity usuarioRolEntity : listUsuarioRolEntities){
+            if(usuarioRolEntity.getRol().getId().toString().equals(rolEntity)){
+                usuarioRolEntity.setRol(rolEntity);
+            }
+        }
     }
 }

@@ -23,8 +23,8 @@ public class EnviarEstadisticasUsuariosUseCase {
     }
 
     public EnviarEstadisticasUsuariosServiceDTO execute(){
-        List<UsuarioDomainEntity> listuUsuarioDomainEntities = usuarioRepository.findAll();
-        Integer totalRegisteredUsers = listuUsuarioDomainEntities.size();
+        List<UsuarioDomainEntity> listUsuarioDomainEntities = usuarioRepository.findAll();
+        Integer totalRegisteredUsers = listUsuarioDomainEntities.size();
 
         List<UsuarioDomainEntity> listUsuarioOrganizador = usuarioRolRepository.findAllUsuariosByNombreRol("ORGANIZADOR");
         Integer totalUsuariosOrganizador = listUsuarioOrganizador.size();
@@ -35,7 +35,7 @@ public class EnviarEstadisticasUsuariosUseCase {
         EnviarEstadisticasUsuariosServiceDTO enviarEstadisticasUsuariosServiceDTO = new EnviarEstadisticasUsuariosServiceDTO();
 
         enviarEstadisticasUsuariosServiceDTO.setTotalRegisteredUsers(totalRegisteredUsers);
-        enviarEstadisticasUsuariosServiceDTO.setListUsuarioDomainEntities(listuUsuarioDomainEntities);
+        enviarEstadisticasUsuariosServiceDTO.setListUsuarioDomainEntities(listUsuarioDomainEntities);
         enviarEstadisticasUsuariosServiceDTO.setTotalUsuariosOrganizador(totalUsuariosOrganizador);
         enviarEstadisticasUsuariosServiceDTO.setListUsuariosOrganizador(listUsuarioOrganizador);
         enviarEstadisticasUsuariosServiceDTO.setTotalUsuariosParticipante(totalUsuariosParticipante);

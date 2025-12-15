@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.zentry.sigea.module_usuarios.core.entities.RolDomainEntity;
 import com.zentry.sigea.module_usuarios.core.entities.UsuarioDomainEntity;
 import com.zentry.sigea.module_usuarios.services.serviceDTO.EnviarEstadisticasUsuariosServiceDTO;
+import com.zentry.sigea.module_usuarios.services.serviceDTO.ListarUsuariosServiceDTO;
+import com.zentry.sigea.module_usuarios.services.usecases.administrador.CambiarRolUsuarioUseCase;
 import com.zentry.sigea.module_usuarios.services.usecases.administrador.CrearRolUseCase;
 import com.zentry.sigea.module_usuarios.services.usecases.administrador.EditarRolUseCase;
 import com.zentry.sigea.module_usuarios.services.usecases.administrador.EliminarRolUseCase;
@@ -26,6 +28,7 @@ public class AdministradorService {
     private final ListarRolesUseCase listarRolesUseCase;
     private final EditarRolUseCase editarRolUseCase;
     private final EliminarRolUseCase eliminarRolUseCase;
+    private final CambiarRolUsuarioUseCase cambiarRolUsuarioUseCase;
 
     public AdministradorService(
         RegisterUsuarioUseCase registerUsuarioUseCase , 
@@ -34,7 +37,8 @@ public class AdministradorService {
         EnviarEstadisticasUsuariosUseCase enviarEstadisticasUsuariosUseCase , 
         ListarRolesUseCase listarRolesUseCase,
         EditarRolUseCase editarRolUseCase,
-        EliminarRolUseCase eliminarRolUseCase
+        EliminarRolUseCase eliminarRolUseCase,
+        CambiarRolUsuarioUseCase cambiarRolUsuarioUseCase
     ){
         this.registerUsuarioUseCase = registerUsuarioUseCase;
         this.crearRolUseCase = crearRolUseCase;
@@ -43,6 +47,7 @@ public class AdministradorService {
         this.listarRolesUseCase = listarRolesUseCase;
         this.editarRolUseCase = editarRolUseCase;
         this.eliminarRolUseCase = eliminarRolUseCase;
+        this.cambiarRolUsuarioUseCase = cambiarRolUsuarioUseCase;
     }
 
     public String registerUsuario(
@@ -74,7 +79,7 @@ public class AdministradorService {
         );
     }
 
-    public List<UsuarioDomainEntity> listarUsuarios(){
+    public List<ListarUsuariosServiceDTO> listarUsuarios(){
         return listarUsuariosUseCase.execute();
     }
 
@@ -84,5 +89,8 @@ public class AdministradorService {
 
     public String eliminarRol(String id){
         return eliminarRolUseCase.execute(id);
+    }
+    public String cambiarRolUsuario(String usuarioId , String newRolId , String oldRolId){
+        return cambiarRolUsuarioUseCase.execute(usuarioId, newRolId, oldRolId);
     }
 }

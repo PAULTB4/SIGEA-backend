@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zentry.sigea.module_usuarios.presentation.models.mappers.CrearRolMapper;
 import com.zentry.sigea.module_usuarios.presentation.models.mappers.EnviarEstadisticasUsuariosMapper;
 import com.zentry.sigea.module_usuarios.presentation.models.mappers.ListarRolesMapper;
-import com.zentry.sigea.module_usuarios.presentation.models.mappers.ObtenerUsuarioMapper;
+import com.zentry.sigea.module_usuarios.presentation.models.mappers.ListarUsuariosMapper;
 import com.zentry.sigea.module_usuarios.presentation.models.mappers.RegistrarUsuarioMapper;
 import com.zentry.sigea.module_usuarios.presentation.models.requestDTO.CrearRolRequestDTO;
 import com.zentry.sigea.module_usuarios.presentation.models.requestDTO.RegistrarUsuarioRequestDTO;
 import com.zentry.sigea.module_usuarios.presentation.models.responseDTO.EnviarEstadisticasUsuariosResponseDTO;
 import com.zentry.sigea.module_usuarios.presentation.models.responseDTO.GeneralResponseDTO;
 import com.zentry.sigea.module_usuarios.presentation.models.responseDTO.ListarRolesResponseDTO;
-import com.zentry.sigea.module_usuarios.presentation.models.responseDTO.ObtenerUsuarioResponseDTO;
+import com.zentry.sigea.module_usuarios.presentation.models.responseDTO.ListarUsuariosResponseDTO;
 import com.zentry.sigea.module_usuarios.services.AdministradorService;
 import com.zentry.sigea.security.UsuarioAuthInfo;
 
@@ -383,14 +383,15 @@ public class AdministradorApiRestController {
             ),
         tags = {"Listar"}
     )
-    public ResponseEntity<GeneralResponseDTO<List<ObtenerUsuarioResponseDTO>>> listarUsuarios(){
+    public ResponseEntity<GeneralResponseDTO<List<ListarUsuariosResponseDTO>>> listarUsuarios(){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(
-                new GeneralResponseDTO<List<ObtenerUsuarioResponseDTO>>(
+                new GeneralResponseDTO<List<ListarUsuariosResponseDTO>>(
                     true, 
                     "Operación exitosa", 
-                    administradorService.listarUsuarios().stream()
-                        .map(ObtenerUsuarioMapper::domainToResponse)
+                    administradorService.listarUsuarios()
+                        .stream()
+                        .map(ListarUsuariosMapper::serviceToResponse)
                         .collect(Collectors.toList())
                 )
             );
@@ -416,13 +417,48 @@ public class AdministradorApiRestController {
     )
     public ResponseEntity<GeneralResponseDTO<EnviarEstadisticasUsuariosResponseDTO>> estadisticasAdministrador(){
         try {
-            EnviarEstadisticasUsuariosResponseDTO enviarEstadisticasUsuariosResponseDTO = EnviarEstadisticasUsuariosMapper.domainToResponse(administradorService.enviarEstadisticasUsuarios());
+            EnviarEstadisticasUsuariosResponseDTO enviarEstadisticasUsuariosResponseDTO = EnviarEstadisticasUsuariosMapper.serviceToResponse(administradorService.enviarEstadisticasUsuarios());
 
             return ResponseEntity.status(HttpStatus.OK).body(
                 new GeneralResponseDTO<EnviarEstadisticasUsuariosResponseDTO>(
                     true, 
                     "Operacion exitosa", 
                     enviarEstadisticasUsuariosResponseDTO
+                )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new GeneralResponseDTO<>(
+                    false, 
+                    e.getMessage(), 
+                    null
+                )
+            );
+        }
+    }
+
+    @PutMapping("/cambiar-rol-usuario")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+    @Operation(
+        summary = "Cambiar el rol de un usuario",
+        security = @SecurityRequirement(
+            name = "administradorJWT"
+            ),
+        tags = {"Actualizar"}
+    )
+    public ResponseEntity<GeneralResponseDTO<String>> cambiarRolUsuario(
+        @RequestParam("usuarioId") String usuarioID , 
+        @RequestParam("newRolId") String newRolId,
+        @RequestParam("oldRolId") String oldRolId
+    ){
+        try {
+            String responseMessage = administradorService.cambiarRolUsuario(usuarioID, oldRolId , newRolId);
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                new GeneralResponseDTO<>(
+                    true, 
+                    responseMessage,
+                    null
                 )
             );
         } catch (Exception e) {

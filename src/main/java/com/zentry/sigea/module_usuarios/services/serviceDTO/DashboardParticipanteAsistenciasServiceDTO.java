@@ -2,6 +2,7 @@ package com.zentry.sigea.module_usuarios.services.serviceDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -23,5 +24,5 @@ public class DashboardParticipanteAsistenciasServiceDTO {
 
     private String sesionId;
 
-    private List<DashboardParticipanteAsistenciasItemServiceDTO> listParticipantesInfo;
+    private List<DashboardParticipanteAsistenciasItemServiceDTO> listParticipantesInfo = new ArrayList<>();
 }

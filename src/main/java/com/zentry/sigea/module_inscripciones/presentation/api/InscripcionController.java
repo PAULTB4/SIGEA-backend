@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zentry.sigea.module_inscripciones.presentation.models.requestDTO.InscripcionRequest;
 import com.zentry.sigea.module_inscripciones.presentation.models.responseDTO.InscripcionResponse;
+import com.zentry.sigea.module_inscripciones.presentation.models.responseDTO.ApiResponse;
 import com.zentry.sigea.module_inscripciones.services.InscripcionService;
 import com.zentry.sigea.module_inscripciones.services.serviceDTO.CrearInscripcionServiceDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 
 
 /**
@@ -87,33 +89,28 @@ public class InscripcionController {
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('ROLE_PARTICIPANTE', 'ROLE_ORGANIZADOR', 'ROLE_ADMINISTRADOR')")
     @Operation(
-        summary = "Crear una nueva inscipcion.",
+        summary = "Crear una nueva inscripción.",
         security = {
             @SecurityRequirement(name = "administradorJWT"),
             @SecurityRequirement(name = "organizadorJWT"),
-            @SecurityRequirement(name= "participanteJWT")
+            @SecurityRequirement(name = "participanteJWT")
         },
         tags = {"Crear"}
     )
-    public ResponseEntity<InscripcionResponse> crearInscripcion(@RequestBody InscripcionRequest inscripcionRequest) {
+    public ResponseEntity<?> crearInscripcion(@RequestBody @Valid InscripcionRequest inscripcionRequest) {
         try {
-            // Convertir InscripcionRequest a CrearInscripcionServiceDTO
-            CrearInscripcionServiceDTO serviceDTO = new CrearInscripcionServiceDTO();
-            serviceDTO.setUsuarioId(inscripcionRequest.getUsuarioId());
-            serviceDTO.setActividadId(inscripcionRequest.getActividadId());
-            serviceDTO.setFechaInscripcion(inscripcionRequest.getFechaInscripcion());
-            serviceDTO.setEstadoId(inscripcionRequest.getEstadoId());
+            CrearInscripcionServiceDTO serviceDTO = convertirAServiceDTO(inscripcionRequest);
+            inscripcionService.crearInscripcion(serviceDTO);
             
-            String inscripcionId = inscripcionService.crearInscripcion(serviceDTO);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse("Inscripción creada exitosamente", true));
             
-            // Obtener la inscripción creada para devolver la respuesta completa
-            InscripcionResponse response = inscripcionService.obtenerInscripcionPorId(inscripcionId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiResponse(e.getMessage(), false));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse("Error interno del servidor", false));
         }
     }
 
@@ -232,5 +229,15 @@ public class InscripcionController {
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Inscripciones API is running");
     }
+
+
+    private CrearInscripcionServiceDTO convertirAServiceDTO(InscripcionRequest request) {
+    CrearInscripcionServiceDTO serviceDTO = new CrearInscripcionServiceDTO();
+    serviceDTO.setUsuarioId(request.getUsuarioId());
+    serviceDTO.setActividadId(request.getActividadId());
+    serviceDTO.setFechaInscripcion(request.getFechaInscripcion());
+    serviceDTO.setEstadoId(request.getEstadoId());
+    return serviceDTO;
+}
 }
 
