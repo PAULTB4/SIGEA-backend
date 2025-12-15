@@ -171,6 +171,30 @@ VALUES
     ('SUSPENDIDO', 'Suspendido')
 ON CONFLICT (codigo) DO NOTHING;
 
+-- Insertar tipos de validador para certificados
+INSERT INTO tipo_validador (codigo, etiqueta)
+VALUES 
+    ('QR', 'Validación por código QR'),
+    ('HASH', 'Validación por hash criptográfico'),
+    ('URL_PUBLICA', 'Validación por URL pública'),
+    ('OCSP', 'Validación por OCSP'),
+    ('ADMIN', 'Validación administrativa')
+ON CONFLICT (codigo) DO NOTHING;
+
+INSERT INTO estado_pago (codigo , etiqueta)
+VALUES
+    ('PENDIENTE' , 'Pendiente'),
+    ('COMPLETADO' , 'Completado'),
+    ('ANULADO' , 'Anulado')
+ON CONFLICT (codigo) DO NOTHING;
+
+INSERT INTO metodo_pago(codigo , etiqueta)
+VALUES 
+    ('YAPE', 'Yape'),
+    ('PAYPAL', 'Paypal'),
+    ('EFECTIVO', 'Efectivo')
+ON CONFLICT (codigo) DO NOTHING;
+
 -- 8.1) Insertar tipos de certificado
 -- INSERT INTO tipo_certificado (codigo, descripcion, created_at, updated_at)
 -- VALUES 

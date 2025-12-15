@@ -37,16 +37,11 @@ public class ActividadEventListener {
 
             for (String usuarioId : event.getUsuariosIds()) {
                 try {
-                    String nombreUsuario = notificacionService.obtenerNombreUsuarioPorId(usuarioId);
-
-                    // MENSAJE LIMPIO Y PROFESIONAL 
+                    // Mensaje completo para BD y email
                     String mensaje = String.format(
-                        "<strong>Nueva actividad:</strong> %s<br>"
-                        + "<strong>Descripción:</strong> %s<br>"
-                        + "<strong>¡Inscríbete ahora!</strong>",
+                        "Actividad: %s, Descripción: %s",
                         event.getTitulo(),
-                        event.getDescripcion()
-                        
+                        event.getDescripcion() != null ? event.getDescripcion() : ""
                     );
 
                     CrearNotificacionRequest notificacionRequest = new CrearNotificacionRequest(

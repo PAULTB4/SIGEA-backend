@@ -15,6 +15,7 @@ import com.zentry.sigea.module_actividad.infrastructure.database.entities.Activi
 import com.zentry.sigea.module_actividad.infrastructure.repository.ActividadJPARepository;
 import com.zentry.sigea.module_usuarios.infrastructure.database.entities.UsuarioEntity;
 import com.zentry.sigea.module_usuarios.infrastructure.repositories.UsuarioJPARepository;
+import com.zentry.sigea.module_notificaciones.infrastructure.database.mappers.EstadoNotificacionMapper;
 
 @Repository
 public class NotificacionRepositoryAdapter implements INotificacionRepository {
@@ -51,6 +52,22 @@ public class NotificacionRepositoryAdapter implements INotificacionRepository {
                 return false;
             }
 
+            // Si la notificación tiene ID, buscar y actualizar la existente
+            if (notificacionDomainEntity.getId() != null) {
+                var existingOpt = notificacionJPARepository.findById(UUID.fromString(notificacionDomainEntity.getId()));
+                if (existingOpt.isPresent()) {
+                    var existing = existingOpt.get();
+                    // Solo actualiza el estado y la fecha de actualización
+                    existing.setEstadoNotificacion(
+                        EstadoNotificacionMapper.toEntity(notificacionDomainEntity.getEstadoNotificacion())
+                    );
+                    existing.setUpdatedAt(notificacionDomainEntity.getUpdatedAt());
+                    notificacionJPARepository.save(existing);
+                    return true;
+                }
+            }
+
+            // Si no existe, crea una nueva (solo para casos de creación)
             notificacionJPARepository.save(
                 NotificacionMapper.toEntity(
                     notificacionDomainEntity,
@@ -58,7 +75,6 @@ public class NotificacionRepositoryAdapter implements INotificacionRepository {
                     actividadEntity
                 )
             );
-
             return true;
         } catch (Exception e) {
             return false;

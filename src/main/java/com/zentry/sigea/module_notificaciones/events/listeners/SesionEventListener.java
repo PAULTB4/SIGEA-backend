@@ -37,17 +37,18 @@ public class SesionEventListener {
 
             for (String usuarioId : event.getUsuariosIds()) {
                 try {
-                    // Solo datos de la sesión, sin título de actividad
+
+                    // Mensaje en texto plano, formato profesional y legible (guardar todo en la BD)
                     String mensaje = String.format(
-                        "<strong>Nueva publicación-</strong> %s<br>"
-                        + "<strong>Descripción:</strong> %s<br>"
-                        + "<strong>Ponente:</strong> %s<br>"
-                        + "<strong>Modalidad:</strong> %s<br>"
-                        + "<strong>Lugar:</strong> %s<br>"
-                        + "<strong>📅Fecha:</strong> %s<br>"
-                        + "<strong>Hora inicio:</strong> %s<br>"
-                        + "<strong>Hora fin:</strong> %s<br>"
-                        + "<strong>Esta es una sesión de una actividad en la que te inscribiste, ¡No te la pierdas!</strong>",
+                        "Nueva publicación: %s\n\n" +
+                        ", Descripción:\n%s\n\n" +
+                        ", Ponente: %s\n" +
+                        ", Modalidad: %s\n" +
+                        ", Lugar: %s\n" +
+                        ", Fecha: %s\n" +
+                        ", Hora inicio: %s\n" +
+                        ", Hora fin: %s\n\n" +
+                        "--IMPORTANTE:\n(Esta es una sesión de una actividad en la que te inscribiste), ¡No te la pierdas!",
                         event.getTitulo(),
                         event.getDescripcion() != null ? event.getDescripcion() : "",
                         event.getPonente(),
@@ -66,9 +67,12 @@ public class SesionEventListener {
                         null,
                         "SISTEMA"
                     );
-
                     String result = notificacionService.crearNotificacion(request);
                     logger.info("Notificación enviada → Usuario {}: {}", usuarioId, result);
+
+                    // Si tienes un método para enviar email, pásale mensaje (ya tiene todo)
+                    // notificacionService.enviarEmail(usuarioId, mensaje);
+
                 } catch (Exception e) {
                     logger.error("Error enviando notificación al usuario {}: {}", usuarioId, e.getMessage());
                 }
