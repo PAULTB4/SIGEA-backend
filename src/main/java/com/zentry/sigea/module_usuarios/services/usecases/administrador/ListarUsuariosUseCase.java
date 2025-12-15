@@ -51,6 +51,8 @@ public class ListarUsuariosUseCase {
                     nombresRoles.add(rolDomainEntity.getNombreRol());
                 }
                 listarUsuariosServiceDTO.setNombresRoles(nombresRoles);
+
+                listListarUsuariosServiceDTOs.add(listarUsuariosServiceDTO);
             }
         }
 

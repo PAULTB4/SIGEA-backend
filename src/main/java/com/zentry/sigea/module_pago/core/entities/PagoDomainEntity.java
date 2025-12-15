@@ -13,6 +13,9 @@ public class PagoDomainEntity {
     private String metodoId;
     private String estadoId;
     private String referenciaExt;
+    private String usuarioId;
+    private String actividadId;
+    private String usuarioDni;
 
     // Getters and Setters
     public String getIdPago() {
@@ -85,6 +88,30 @@ public class PagoDomainEntity {
 
     public void setReferenciaExt(String referenciaExt) {
         this.referenciaExt = referenciaExt;
+    }
+
+    public String getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(String usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public String getActividadId() {
+        return actividadId;
+    }
+
+    public void setActividadId(String actividadId) {
+        this.actividadId = actividadId;
+    }
+
+    public String getUsuarioDni() {
+        return usuarioDni;
+    }
+
+    public void setUsuarioDni(String usuarioDni) {
+        this.usuarioDni = usuarioDni;
     }
 
     public static PagoDomainEntity create(

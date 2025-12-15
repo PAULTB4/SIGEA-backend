@@ -1,4 +1,4 @@
-package com.zentry.sigea.module_certificaciones.services;
+    package com.zentry.sigea.module_certificaciones.services;
 
 import java.util.List;
 import java.util.Map;
@@ -16,22 +16,27 @@ import com.zentry.sigea.module_certificaciones.presentation.models.responseDTO.V
 import com.zentry.sigea.module_certificaciones.services.interfaces.ICertificacionService;
 import com.zentry.sigea.module_certificaciones.services.interfaces.ICertificadoService;
 import com.zentry.sigea.module_certificaciones.services.interfaces.IValidacionService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
 public class CertificacionService implements ICertificacionService {
-    
     private static final Logger log = LoggerFactory.getLogger(CertificacionService.class);
-    
+
     private final ICertificadoService certificadoService;
     private final IValidacionService validacionService;
-    
+
     public CertificacionService(
         ICertificadoService certificadoService,
         IValidacionService validacionService
     ) {
         this.certificadoService = certificadoService;
         this.validacionService = validacionService;
+    }
+
+    @Override
+    public CertificadoResponse crearCertificadoConArchivo(CrearCertificadoRequest request, MultipartFile file) {
+        return certificadoService.crearCertificadoConArchivo(request, file);
     }
     
     @Override
@@ -98,5 +103,10 @@ public class CertificacionService implements ICertificacionService {
     public String generarPdfCertificado(String codigoValidacion) {
         log.info("Delegando generación de PDF a servicio Clean Architecture");
         return certificadoService.generarPdfCertificado(codigoValidacion);
+    }
+
+    @Override
+    public String subirCertificado(MultipartFile file, String pathDestino) throws Exception {
+        return certificadoService.subirCertificado(file, pathDestino);
     }
 }

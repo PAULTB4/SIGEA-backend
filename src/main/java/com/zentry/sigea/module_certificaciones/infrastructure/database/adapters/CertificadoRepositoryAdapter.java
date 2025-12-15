@@ -12,18 +12,22 @@ import com.zentry.sigea.module_certificaciones.core.entities.EstadoCertificadoDo
 import com.zentry.sigea.module_certificaciones.core.repositories.ICertificadoRepository;
 import com.zentry.sigea.module_certificaciones.infrastructure.database.entities.CertificadoEntity;
 import com.zentry.sigea.module_certificaciones.infrastructure.repository.CertificadoRepository;
+import com.zentry.sigea.module_certificaciones.infrastructure.repository.EstadoCertificadoRepository;
+import com.zentry.sigea.module_certificaciones.infrastructure.database.entities.EstadoCertificadoEntity;
 
 /**
  * Adaptador que implementa la interfaz del dominio ICertificadoRepository
  * y delega las operaciones al repositorio JPA de infraestructura
  */
 @Component
+
 public class CertificadoRepositoryAdapter implements ICertificadoRepository {
-    
     private final CertificadoRepository jpaRepository;
-    
-    public CertificadoRepositoryAdapter(CertificadoRepository jpaRepository) {
+    private final EstadoCertificadoRepository estadoCertificadoRepository;
+
+    public CertificadoRepositoryAdapter(CertificadoRepository jpaRepository, EstadoCertificadoRepository estadoCertificadoRepository) {
         this.jpaRepository = jpaRepository;
+        this.estadoCertificadoRepository = estadoCertificadoRepository;
     }
     
     @Override
@@ -140,11 +144,7 @@ public class CertificadoRepositoryAdapter implements ICertificadoRepository {
      * Convierte una entidad de dominio a una entidad JPA
      */
     private CertificadoEntity convertToEntity(CertificadoDomainEntity domain) {
-        // TODO: Implementar el mapper completo según la estructura de CertificadoEntity
-        // Por ahora, creamos una conversión básica
-        
         CertificadoEntity entity = new CertificadoEntity();
-        
         // Mapear campos básicos
         if (domain.getIdCertificado() != null && !domain.getIdCertificado().trim().isEmpty()) {
             entity.setIdCertificado(UUID.fromString(domain.getIdCertificado()));
@@ -155,15 +155,16 @@ public class CertificadoRepositoryAdapter implements ICertificadoRepository {
         entity.setUrlPdf(domain.getUrlPdf());
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
-        
-        // TODO: Mapear estado y otros campos complejos
-        // Se necesitará obtener la entidad EstadoCertificadoEntity por ID o código
-        if (domain.getEstado() != null) {
-            // Por ahora solo guardamos el ID como string
-            // En una implementación completa, se debería buscar la entidad EstadoCertificadoEntity
-            // entity.setEstado(estadoCertificadoRepository.findByCodigo(domain.getEstado().getCodigo()));
+
+        // Mapear estado correctamente usando el repositorio
+        if (domain.getEstado() != null && domain.getEstado().getCodigo() != null) {
+            EstadoCertificadoEntity estadoEntity = estadoCertificadoRepository.findByCodigo(domain.getEstado().getCodigo())
+                .orElseThrow(() -> new IllegalStateException("No se encontró el estado de certificado con código: " + domain.getEstado().getCodigo()));
+            entity.setEstado(estadoEntity);
+        } else {
+            throw new IllegalArgumentException("El estado del certificado no puede ser nulo");
         }
-        
+
         return entity;
     }
 }

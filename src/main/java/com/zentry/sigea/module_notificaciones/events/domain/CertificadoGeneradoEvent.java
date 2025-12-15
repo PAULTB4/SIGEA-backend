@@ -18,7 +18,8 @@ public class CertificadoGeneradoEvent {
         GENERADO("Certificado generado"),
         EMITIDO("Certificado emitido"),
         VALIDADO("Certificado validado"),
-        ANULADO("Certificado anulado");
+        ANULADO("Certificado anulado"),
+        PENDIENTE("Certificado pendiente");
         
         private final String descripcion;
         

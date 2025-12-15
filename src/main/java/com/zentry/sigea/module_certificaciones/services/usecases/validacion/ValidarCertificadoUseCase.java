@@ -1,14 +1,22 @@
 package com.zentry.sigea.module_certificaciones.services.usecases.validacion;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
+import com.zentry.sigea.module_inscripciones.core.repositories.IInscripcionRepository;
+import com.zentry.sigea.module_asistencias.core.repositories.IAsistenciaRepository;
 
 import com.zentry.sigea.module_certificaciones.core.entities.CertificadoDomainEntity;
 import com.zentry.sigea.module_certificaciones.core.entities.TipoValidadorDomainEntity;
 import com.zentry.sigea.module_certificaciones.core.entities.ValidacionDomainEntity;
+import com.zentry.sigea.module_certificaciones.core.entities.EstadoCertificadoDomainEntity;
 import com.zentry.sigea.module_certificaciones.core.repositories.ICertificadoRepository;
 import com.zentry.sigea.module_certificaciones.core.repositories.ITipoValidadorRepository;
+import com.zentry.sigea.module_certificaciones.infrastructure.repository.TipoValidadorRepository;
+import com.zentry.sigea.module_certificaciones.infrastructure.database.entities.TipoValidadorEntity;
 import com.zentry.sigea.module_certificaciones.core.repositories.IValidacionRepository;
 import com.zentry.sigea.module_certificaciones.presentation.models.requestDTO.ValidarCertificadoRequest;
 
@@ -17,79 +25,155 @@ import com.zentry.sigea.module_certificaciones.presentation.models.requestDTO.Va
  */
 @Component
 public class ValidarCertificadoUseCase {
+    private static final Logger logger = LoggerFactory.getLogger(ValidarCertificadoUseCase.class);
+
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+    private final IInscripcionRepository inscripcionRepository;
+    private final IAsistenciaRepository asistenciaRepository;
 
     private final IValidacionRepository validacionRepository;
     private final ICertificadoRepository certificadoRepository;
     private final ITipoValidadorRepository tipoValidadorRepository;
+    private final TipoValidadorRepository tipoValidadorJpaRepository;
+    private final com.zentry.sigea.module_certificaciones.core.repositories.IEstadoCertificadoRepository estadoCertificadoRepository;
 
     public ValidarCertificadoUseCase(
         IValidacionRepository validacionRepository,
         ICertificadoRepository certificadoRepository,
-        ITipoValidadorRepository tipoValidadorRepository
+        ITipoValidadorRepository tipoValidadorRepository,
+        com.zentry.sigea.module_certificaciones.core.repositories.IEstadoCertificadoRepository estadoCertificadoRepository,
+        TipoValidadorRepository tipoValidadorJpaRepository,
+        org.springframework.context.ApplicationEventPublisher eventPublisher,
+        IInscripcionRepository inscripcionRepository,
+        IAsistenciaRepository asistenciaRepository
     ) {
         this.validacionRepository = validacionRepository;
         this.certificadoRepository = certificadoRepository;
         this.tipoValidadorRepository = tipoValidadorRepository;
+        this.estadoCertificadoRepository = estadoCertificadoRepository;
+        this.tipoValidadorJpaRepository = tipoValidadorJpaRepository;
+        this.eventPublisher = eventPublisher;
+        this.inscripcionRepository = inscripcionRepository;
+        this.asistenciaRepository = asistenciaRepository;
     }
 
     /**
      * Ejecuta la validación de un certificado
      */
     public ValidacionDomainEntity execute(ValidarCertificadoRequest request) {
+            logger.info("[VALIDACIÓN] Iniciando validación de certificado: {}", request.getCodigoValidacion());
         // Validaciones de entrada
         validateInput(request);
-        
+
         // Buscar certificado
         CertificadoDomainEntity certificado = certificadoRepository
             .findByCodigoValidacion(request.getCodigoValidacion())
             .orElseThrow(() -> new IllegalArgumentException(
                 "No se encontró un certificado con código: " + request.getCodigoValidacion()
             ));
-        
-        // Buscar tipo de validador
+
+        // Buscar tipo de validador (dominio)
         TipoValidadorDomainEntity tipoValidador = tipoValidadorRepository
             .findByCodigo(request.getTipoValidador())
             .orElseThrow(() -> new IllegalArgumentException(
                 "No se encontró un tipo de validador con código: " + request.getTipoValidador()
             ));
-        
+
+        // Buscar tipo de validador (infraestructura/JPA) para obtener el UUID
+        TipoValidadorEntity tipoValidadorEntity = tipoValidadorJpaRepository
+            .findByCodigo(request.getTipoValidador())
+            .orElseThrow(() -> new IllegalArgumentException(
+                "No se encontró el tipo de validador en la base de datos: " + request.getTipoValidador()
+            ));
+
         // Validaciones de negocio
         validateBusinessRules(certificado, tipoValidador, request);
-        
-        // Verificar si ya existe una validación de este tipo para el certificado
+
+        // Verificar si ya existe una validación de este tipo para el certificado usando el UUID
         Optional<ValidacionDomainEntity> validacionExistente = validacionRepository
             .findByCertificadoIdAndTipoValidadorId(
-                certificado.getAsistenciaId(), 
-                tipoValidador.getCodigo()
+                certificado.getIdCertificado(),
+                tipoValidadorEntity.getIdTipoValidador()
             );
-        
+
         ValidacionDomainEntity validacion;
-        
+        String resultado = determinarResultado(request);
+
         if (validacionExistente.isPresent()) {
             // Actualizar validación existente
             validacion = validacionExistente.get();
             validacion.actualizarResultado(
-                determinarResultado(request), 
+                resultado,
                 request.getDetalle()
             );
         } else {
             // Crear nueva validación
-            String resultado = determinarResultado(request);
             if ("APROBADO".equals(resultado)) {
+                            logger.info("[VALIDACIÓN] Certificado validado correctamente. Publicando evento de notificación EMITIDO...");
                 validacion = ValidacionDomainEntity.crearAprobada(
-                    certificado.getAsistenciaId(),
+                    certificado.getIdCertificado(),
                     tipoValidador.getCodigo(),
                     request.getDetalle()
                 );
             } else {
                 validacion = ValidacionDomainEntity.crearRechazada(
-                    certificado.getAsistenciaId(), 
-                    tipoValidador.getCodigo(), 
+                    certificado.getIdCertificado(),
+                    tipoValidador.getCodigo(),
                     request.getDetalle()
                 );
             }
         }
-        
+
+        // Si la validación fue aprobada, cambiar estado del certificado a EMITIDO
+        if ("APROBADO".equals(resultado)) {
+            // Buscar estado EMITIDO
+            EstadoCertificadoDomainEntity estadoEmitido = estadoCertificadoRepository.findByCodigo("EMITIDO")
+                .orElse(EstadoCertificadoDomainEntity.emitido());
+            certificado.cambiarEstado(estadoEmitido);
+            certificadoRepository.save(certificado);
+
+            // Notificación automática (EMITIDO) por asistencias reales de la sesión
+            try {
+                String asistenciaId = certificado.getAsistenciaId();
+                if (asistenciaId != null) {
+                    // Buscar la asistencia original para obtener la sesión
+                    var asistenciaOpt = asistenciaRepository.findById(asistenciaId);
+                    if (asistenciaOpt.isPresent()) {
+                        var asistencia = asistenciaOpt.get();
+                        String sesionId = asistencia.getSesionId();
+                        // Buscar todas las asistencias de esa sesión
+                        var asistenciasSesion = asistenciaRepository.findBySesionId(sesionId);
+                        for (var asistenciaSesion : asistenciasSesion) {
+                            // Para cada asistencia, obtener la inscripción y el usuario
+                            var inscripcionOpt = inscripcionRepository.findById(asistenciaSesion.getInscripcionId());
+                            if (inscripcionOpt.isPresent()) {
+                                var inscripcion = inscripcionOpt.get();
+                                String usuarioId = inscripcion.getUsuarioId();
+                                String actividadId = inscripcion.getActividadId();
+                                logger.info("[EVENTO] Publicando notificación EMITIDO para asistenciaId={}, usuarioId={}, actividadId={}, certificadoId={}", asistenciaSesion.getId(), usuarioId, actividadId, certificado.getIdCertificado());
+                                eventPublisher.publishEvent(
+                                    new com.zentry.sigea.module_notificaciones.events.domain.CertificadoGeneradoEvent(
+                                        usuarioId,
+                                        certificado.getIdCertificado(),
+                                        actividadId,
+                                        null, // actividadTitulo (opcional)
+                                        certificado.getCodigoValidacion(),
+                                        certificado.getFechaEmision(),
+                                        com.zentry.sigea.module_notificaciones.events.domain.CertificadoGeneradoEvent.EstadoCertificado.EMITIDO,
+                                        certificado.getUrlPdf(),
+                                        asistenciaSesion.getId(),
+                                        certificado.getCreatedAt() != null ? certificado.getCreatedAt() : java.time.LocalDateTime.now()
+                                    )
+                                );
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("[ERROR] Error publicando evento de notificación EMITIDO: {}", e.getMessage(), e);
+            }
+        }
+
         // Guardar y retornar
         return validacionRepository.save(validacion);
     }

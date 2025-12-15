@@ -26,6 +26,31 @@ public class CertificadoEventListener {
     @Async
     public void onCertificadoGenerado(CertificadoGeneradoEvent event) {
         try {
+            // Log detallado de todos los datos del evento recibido
+            logger.info("\n--- DATOS RECIBIDOS EN CertificadoGeneradoEvent ---\n"
+                    + "usuarioId: {}\n"
+                    + "certificadoId: {}\n"
+                    + "actividadId: {}\n"
+                    + "actividadTitulo: {}\n"
+                    + "codigoValidacion: {}\n"
+                    + "fechaEmision: {}\n"
+                    + "estado: {}\n"
+                    + "urlPdf: {}\n"
+                    + "asistenciaId: {}\n"
+                    + "fechaGeneracion: {}\n",
+                    event.getUsuarioId(),
+                    event.getCertificadoId(),
+                    event.getActividadId(),
+                    event.getActividadTitulo(),
+                    event.getCodigoValidacion(),
+                    event.getFechaEmision(),
+                    event.getEstado(),
+                    event.getUrlPdf(),
+                    event.getAsistenciaId(),
+                    event.getFechaGeneracion()
+            );
+
+            // Log simple de evento recibido
             logger.info(
                 "Evento recibido: Certificado generado {} para usuario {} - Código: {}",
                 event.getCertificadoId(),
@@ -37,7 +62,8 @@ public class CertificadoEventListener {
             String fechaFormateada = event.getFechaEmision()
                     .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-            // MENSAJE HTML PROFESIONAL Y COMPACTO
+            // MENSAJE HTML PROFESIONAL Y COMPACTO (con fallback para actividad)
+            String actividadTitulo = (event.getActividadTitulo() == null || event.getActividadTitulo().isEmpty()) ? "Se completó la actividad" : event.getActividadTitulo();
             String mensaje = """
 🏅 <strong>¡Felicidades! Tu certificado ha sido emitido</strong><br>
 
@@ -74,7 +100,7 @@ public class CertificadoEventListener {
 <br>¡Felicitaciones por tu logro! 🎉
 </div>
 """.formatted(
-                    event.getActividadTitulo(),
+                    actividadTitulo,
                     event.getEstado().getDescripcion(),
                     fechaFormateada,
                     event.getCodigoValidacion(),

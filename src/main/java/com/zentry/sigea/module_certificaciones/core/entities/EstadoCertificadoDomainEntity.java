@@ -36,6 +36,13 @@ public class EstadoCertificadoDomainEntity {
     /* MÉTODOS DEL DOMINIO */
 
     /**
+     * Factory method para crear estado PENDIENTE
+     */
+    public static EstadoCertificadoDomainEntity pendiente() {
+        return new EstadoCertificadoDomainEntity("PENDIENTE", "Pendiente");
+    }
+
+    /**
      * Factory method para crear estado EMITIDO
      */
     public static EstadoCertificadoDomainEntity emitido() {
@@ -74,7 +81,7 @@ public class EstadoCertificadoDomainEntity {
      * Verifica si es un estado válido
      */
     public boolean esValido() {
-        return codigo != null && 
-               (codigo.equals("EMITIDO") || codigo.equals("REVOCADO") || codigo.equals("SUSPENDIDO"));
+         return codigo != null && 
+             (codigo.equals("EMITIDO") || codigo.equals("REVOCADO") || codigo.equals("SUSPENDIDO") || codigo.equals("PENDIENTE"));
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zentry.sigea.module_pago.presentation.models.requestDTO.EstadoPagoRequest;
 import com.zentry.sigea.module_pago.services.EstadoPagoService;
-import com.zentry.sigea.module_pago.services.usecase.estadopago.CrearEstadoPagoUseCase;
 
 import org.slf4j.Logger;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +28,7 @@ public class EstadoPagoController {
     private EstadoPagoService estadoPagoService;
 
     @PostMapping("/crear-estado-pago")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR')")
     @Operation(summary = "Crear estado de pago", description = "Crea un nuevo estado de pago", security = {
             @SecurityRequirement(name = "administradorJWT"),
             @SecurityRequirement(name = "organizadorJWT")
@@ -46,7 +45,7 @@ public class EstadoPagoController {
     }
 
     @GetMapping("/listar-estados-pago")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR')")
     @Operation(summary = "Listar estados de pago", description = "Obtiene todos los estados de pago", security = {
             @SecurityRequirement(name = "administradorJWT"),
             @SecurityRequirement(name = "organizadorJWT")

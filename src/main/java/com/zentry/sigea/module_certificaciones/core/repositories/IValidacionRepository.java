@@ -2,6 +2,7 @@ package com.zentry.sigea.module_certificaciones.core.repositories;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.zentry.sigea.module_certificaciones.core.entities.ValidacionDomainEntity;
 
@@ -32,7 +33,7 @@ public interface IValidacionRepository {
     /**
      * Busca una validación específica por certificado y tipo de validador
      */
-    Optional<ValidacionDomainEntity> findByCertificadoIdAndTipoValidadorId(String certificadoId, String tipoValidadorId);
+    Optional<ValidacionDomainEntity> findByCertificadoIdAndTipoValidadorId(String certificadoId, UUID tipoValidadorId);
     
     /**
      * Busca validaciones por resultado (APROBADO/RECHAZADO)

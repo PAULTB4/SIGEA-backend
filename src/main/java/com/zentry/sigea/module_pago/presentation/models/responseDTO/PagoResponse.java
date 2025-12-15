@@ -19,6 +19,9 @@ public class PagoResponse {
     private String metodoId;
     private String estadoId;
     private String referenciaExt;
+    private String usuarioId;
+    private String actividadId;
+    private String usuarioDni;
 
     public PagoResponse() {
     }
@@ -33,6 +36,9 @@ public class PagoResponse {
         this.metodoId = entity.getMetodoId();
         this.estadoId = entity.getEstadoId();
         this.referenciaExt = entity.getReferenciaExt();
+        this.usuarioId = entity.getUsuarioId();
+        this.actividadId = entity.getActividadId();
+        this.usuarioDni = entity.getUsuarioDni();
     }
 
     public static PagoResponseBuilder builder() {
@@ -134,6 +140,30 @@ public class PagoResponse {
 
     public void setReferenciaExt(String referenciaExt) {
         this.referenciaExt = referenciaExt;
+    }
+
+    public String getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(String usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public String getActividadId() {
+        return actividadId;
+    }
+
+    public void setActividadId(String actividadId) {
+        this.actividadId = actividadId;
+    }
+
+    public String getUsuarioDni() {
+        return usuarioDni;
+    }
+
+    public void setUsuarioDni(String usuarioDni) {
+        this.usuarioDni = usuarioDni;
     }
 
     static class PagoResponseBuilder {

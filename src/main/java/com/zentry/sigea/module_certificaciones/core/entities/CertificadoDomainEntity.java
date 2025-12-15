@@ -198,9 +198,9 @@ public class CertificadoDomainEntity {
     }
 
     /**
-     * Verifica si el certificado es válido (emitido y no revocado)
+     * Verifica si el certificado es válido para ser validado (solo si está PENDIENTE)
      */
     public boolean esValido() {
-        return estaEmitido();
+        return estado != null && "PENDIENTE".equals(estado.getCodigo());
     }
 }

@@ -23,13 +23,16 @@ public class ValidacionRepositoryAdapter implements IValidacionRepository {
     
     private final ValidacionRepository jpaRepository;
     private final TipoValidadorRepository tipoValidadorRepository;
+    private final com.zentry.sigea.module_certificaciones.infrastructure.repository.CertificadoRepository certificadoRepository;
     
     public ValidacionRepositoryAdapter(
         ValidacionRepository jpaRepository , 
-        TipoValidadorRepository tipoValidadorRepository
+        TipoValidadorRepository tipoValidadorRepository,
+        com.zentry.sigea.module_certificaciones.infrastructure.repository.CertificadoRepository certificadoRepository
     ) {
         this.jpaRepository = jpaRepository;
         this.tipoValidadorRepository = tipoValidadorRepository;
+        this.certificadoRepository = certificadoRepository;
     }
     
     @Override
@@ -73,10 +76,9 @@ public class ValidacionRepositoryAdapter implements IValidacionRepository {
     }
     
     @Override
-    public Optional<ValidacionDomainEntity> findByCertificadoIdAndTipoValidadorId(String certificadoId, String tipoValidadorId) {
+    public Optional<ValidacionDomainEntity> findByCertificadoIdAndTipoValidadorId(String certificadoId, java.util.UUID tipoValidadorId) {
         UUID certificadoUuid = UUID.fromString(certificadoId);
-        UUID tipoUuid = UUID.fromString(tipoValidadorId);
-        return jpaRepository.findByCertificadoIdAndTipoValidadorId(certificadoUuid, tipoUuid)
+        return jpaRepository.findByCertificadoIdAndTipoValidadorId(certificadoUuid, tipoValidadorId)
             .map(this::convertToDomain);
     }
     
@@ -96,11 +98,12 @@ public class ValidacionRepositoryAdapter implements IValidacionRepository {
             .collect(Collectors.toList());
     }
     
+
     @Override
     public boolean existsByCertificadoIdAndTipoValidadorId(String certificadoId, String tipoValidadorId) {
         UUID certificadoUuid = UUID.fromString(certificadoId);
-        UUID tipoUuid = UUID.fromString(tipoValidadorId);
-        return jpaRepository.findByCertificadoIdAndTipoValidadorId(certificadoUuid, tipoUuid)
+        UUID tipoValidadorUuid = UUID.fromString(tipoValidadorId);
+        return jpaRepository.findByCertificadoIdAndTipoValidadorId(certificadoUuid, tipoValidadorUuid)
             .isPresent();
     }
     
@@ -157,16 +160,18 @@ public class ValidacionRepositoryAdapter implements IValidacionRepository {
         TipoValidadorEntity tipoValidadorEntity
     ) {
         ValidacionEntity entity = new ValidacionEntity();
-        
         // Mapear campos básicos
-        // Nota: El certificado y tipo validador deben ser cargados por separado
         entity.setTipoValidador(tipoValidadorEntity);
         entity.setFechaValidacion(domain.getFechaValidacion());
         entity.setResultado(domain.getResultado());
         entity.setDetalle(domain.getDetalle());
-        
-        // TODO: Cargar certificado por ID cuando sea necesario
-        
+
+        // Cargar y asignar el certificado por ID
+        if (domain.getCertificado() != null) {
+            UUID certificadoId = UUID.fromString(domain.getCertificado());
+            certificadoRepository.findById(certificadoId).ifPresent(entity::setCertificado);
+        }
+
         return entity;
     }
 }

@@ -28,7 +28,7 @@ public class MetodoPagoController {
     private static final Logger log = LoggerFactory.getLogger(MetodoPagoController.class);
 
     @PostMapping("/crear-metodo-pago")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR')")
     @Operation(summary = "Crear metodo de pago", description = "Crea un nuevo metodo de pago", security = {
             @SecurityRequirement(name = "administradorJWT"),
             @SecurityRequirement(name = "organizadorJWT")
@@ -45,10 +45,11 @@ public class MetodoPagoController {
     }
 
     @GetMapping("/listar-metodos-pago")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR' , 'ROLE_PARTICIPANTE')")
     @Operation(summary = "Listar metodos de pago", description = "Obtiene todos los metodos de pago", security = {
             @SecurityRequirement(name = "administradorJWT"),
-            @SecurityRequirement(name = "organizadorJWT")
+            @SecurityRequirement(name = "organizadorJWT"),
+            @SecurityRequirement(name = "participanteJWT")
     }, tags = { "Listar" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Metodos de pago listados exitosamente"),

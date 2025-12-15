@@ -94,6 +94,10 @@ public class PagoRepositoryAdapter implements IPagoRepository {
                 throw new IllegalArgumentException("Estado de pago no encontrado");
             }
 
+            if (pagoRepository.existsByInscripcionId(inscripcionEntity.get().getId())) {
+                throw new IllegalArgumentException("La inscripcion ya tiene un pago");
+            }
+
             Optional<MetodoPagoEntity> metodoPagoEntity = metodoPagoJPARepository.findById(request.metodoPagoId());
             if (metodoPagoEntity.isEmpty()) {
                 throw new IllegalArgumentException("Metodo de pago no encontrado");

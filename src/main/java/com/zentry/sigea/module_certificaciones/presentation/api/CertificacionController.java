@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zentry.sigea.module_certificaciones.presentation.models.requestDTO.CrearCertificadoRequest;
@@ -26,6 +28,7 @@ import com.zentry.sigea.module_certificaciones.presentation.models.responseDTO.C
 import com.zentry.sigea.module_certificaciones.presentation.models.responseDTO.ValidacionResponse;
 import com.zentry.sigea.module_certificaciones.services.interfaces.ICertificacionService;
 import com.zentry.sigea.module_informe.infrastructure.database.mappers.TipoInformeMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,6 +49,29 @@ public class CertificacionController {
     @Autowired
     private ICertificacionService certificacionService;
 
+    /**
+     * Subir archivo de certificado a proveedor externo (Supabase, S3, etc)
+     */
+    @PostMapping("/subir-archivo")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+    @Operation(
+        summary = "Subir archivo de certificado",
+        description = "Sube un archivo PDF de certificado al proveedor externo y retorna la URL",
+        security = @SecurityRequirement(name = "administradorJWT"),
+        tags = {"Subir"}
+    )
+    public ResponseEntity<String> subirArchivoCertificado(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("pathDestino") String pathDestino) {
+        try {
+            String url = certificacionService.subirCertificado(file, pathDestino);
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            log.error("Error al subir archivo de certificado: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     CertificacionController(TipoInformeMapper tipoInformeMapper) {
         this.tipoInformeMapper = tipoInformeMapper;
     }
@@ -53,29 +79,48 @@ public class CertificacionController {
     /**
      * Crear un nuevo certificado
      */
-    @PostMapping("/crear")
+    @PostMapping(value = "/crear", consumes = {"multipart/form-data"})
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     @Operation(
-        summary = "Crear certificado", 
-        description = "Crea un nuevo certificado para una inscripción" , 
-        security = @SecurityRequirement(
-            name = "administradorJWT"
-        ) , 
+        summary = "Crear certificado",
+        description = "Crea un nuevo certificado para una inscripción. Permite subir un archivo o generarlo automáticamente.",
+        security = @SecurityRequirement(name = "administradorJWT"),
         tags = {"Crear"}
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Certificado creado exitosamente"),
     })
-    public ResponseEntity<CertificadoResponse> crearCertificado(@Valid @RequestBody CrearCertificadoRequest request) {
-        log.info("Solicitud de creación de certificado para inscripción: {}", request.getAsistenciaId());
-        
+    public ResponseEntity<CertificadoResponse> crearCertificado(
+            @Parameter(
+                description = "Datos del certificado en formato JSON.\n\nAtributos esperados:\n- asistenciaId: (string) ID de la asistencia.\n- tipoCertificado: (string) Tipo de certificado (por ejemplo, 'SUBIDO').\n- observaciones: (string, opcional) Observaciones adicionales.\n- nombreArchivo: (string, opcional) Nombre del archivo PDF.\n\nEjemplo:\n{\n  \"asistenciaId\": \"0e62115a-ee1e-4ade-8980-2fdf58382ff4\",\n  \"tipoCertificado\": \"SUBIDO\",\n  \"observaciones\": \"Texto opcional\",\n  \"nombreArchivo\": \"certificadofiis.pdf\"\n}",
+                example = "{\n  \"asistenciaId\": \"0e62115a-ee1e-4ade-8980-2fdf58382ff4\",\n  \"tipoCertificado\": \"SUBIDO\",\n  \"observaciones\": \"Texto opcional\",\n  \"nombreArchivo\": \"certificadofiis.pdf\"\n}"
+            )
+            @RequestPart("datos") String datos,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            CertificadoResponse certificado = certificacionService.crearCertificado(request);
+            ObjectMapper mapper = new ObjectMapper();
+            CrearCertificadoRequest request = mapper.readValue(datos, CrearCertificadoRequest.class);
+            log.info("Solicitud de creación de certificado para inscripción: {}", request.getAsistenciaId());
+
+            CertificadoResponse certificado;
+            if ("SUBIDO".equalsIgnoreCase(request.getTipoCertificado())) {
+                if (file == null || file.isEmpty()) {
+                    throw new IllegalArgumentException("Debe adjuntar un archivo para tipo SUBIDO");
+                }
+                // Lógica para subir el archivo y crear el certificado con la URL
+                certificado = certificacionService.crearCertificadoConArchivo(request, file);
+            } else {
+                // Lógica para generar automáticamente el certificado
+                certificado = certificacionService.crearCertificado(request);
+            }
             log.info("Certificado creado exitosamente con ID: {}", certificado.getIdCertificado());
             return ResponseEntity.status(HttpStatus.CREATED).body(certificado);
         } catch (RuntimeException e) {
             log.error("Error al crear certificado: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            log.error("Error al deserializar datos: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
@@ -121,17 +166,18 @@ public class CertificacionController {
         },
         tags = {"Obtener"}
     )
-    public ResponseEntity<CertificadoResponse> buscarCertificadoPorCodigo(
+    public ResponseEntity<?> buscarCertificadoPorCodigo(
             @Parameter(description = "Código de validación del certificado") 
             @PathVariable String codigoValidacion) {
-        
         log.debug("Buscando certificado por código: {}", codigoValidacion);
-        
         Optional<CertificadoResponse> certificado = certificacionService.buscarCertificadoPorCodigo(codigoValidacion);
-        
-        return certificado
-            .map(cert -> ResponseEntity.ok(cert))
-            .orElse(ResponseEntity.notFound().build());
+        if (certificado.isPresent()) {
+            return ResponseEntity.ok(certificado.get());
+        } else {
+            // Retornar mensaje indicando que el certificado está en validación
+            String mensaje = "El certificado aún está en proceso de validación. Recibirá una notificación cuando esté disponible para descarga.";
+            return ResponseEntity.status(202).body(mensaje);
+        }
     }
     
     /**

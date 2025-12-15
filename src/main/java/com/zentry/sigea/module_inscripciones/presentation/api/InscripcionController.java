@@ -69,12 +69,13 @@ public class InscripcionController {
      * Listar todas las inscripciones
      */
     @GetMapping("/listar")
-    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR' , 'ROLE_ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR' , 'ROLE_ORGANIZADOR' , 'ROLE_PARTICIPANTE')")
     @Operation(
         summary = "Listar las inscipciones.",
         security = {
             @SecurityRequirement(name = "administradorJWT"),
-            @SecurityRequirement(name = "organizadorJWT")
+            @SecurityRequirement(name = "organizadorJWT"),
+            @SecurityRequirement(name = "participanteJWT")
         },
         tags = {"Listar"}
     )
@@ -144,12 +145,13 @@ public class InscripcionController {
      * Obtener inscripciones por actividad
      */
     @GetMapping("/obtener/actividad/{actividadId}")
-    @PreAuthorize("hasAnyRole('ROLE_ORGANIZADOR' , 'ROLE_ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ORGANIZADOR' , 'ROLE_ADMINISTRADOR' , 'ROLE_PARTICIPANTE')")
     @Operation(
         summary = "obtener inscripciones por ID de actividad.",
         security = {
             @SecurityRequirement(name = "administradorJWT"),
-            @SecurityRequirement(name = "organizadorJWT")
+            @SecurityRequirement(name = "organizadorJWT"),
+            @SecurityRequirement(name = "participanteJWT")
         },
         tags = {"Obtener"}
     )

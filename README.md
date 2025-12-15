@@ -115,7 +115,23 @@ MAIL_DEFAULT_ENCODING={def: UTF-8}
 MAIL_MIME_CHARSET={def: UTF-8}
 
 # Almacenamiento de Medios
-MEDIA_LOCATION={Ubicacion de almacenamiento de medios. def: ./uploads}
+
+# Configuración de Almacenamiento Externo (Supabase, S3, etc)
+# Si deseas usar Supabase u otro almacenamiento externo para certificados o archivos, agrega las siguientes variables:
+
+# SUPABASE
+SUPABASE_URL={URL de tu proyecto Supabase}
+SUPABASE_KEY={Clave secreta de tu proyecto Supabase}
+SUPABASE_BUCKET={Nombre del bucket donde se almacenarán los archivos}
+
+
+# Ejemplo de configuración para Supabase:
+# SUPABASE_URL=https://xxxx.supabase.co
+# SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# SUPABASE_BUCKET=certificados
+
+
+MEDIA_LOCATION={Ubicacion de almacenamiento de medios local. def: ./uploads}
 
 # Dominios o Enlaces Publicos
 SIGEA_PUBLIC_BACKEND_DOMAIN={Dominio publico del Backend del Proyecto para configuración CORS}

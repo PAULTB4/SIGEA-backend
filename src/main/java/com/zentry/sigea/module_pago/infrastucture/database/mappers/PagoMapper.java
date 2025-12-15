@@ -64,6 +64,9 @@ public class PagoMapper {
         domain.setEstadoId(entity.getEstadoPago().getIdEstadoPago().toString());
 
         domain.setInscripcionId(entity.getInscripcion().getId().toString());
+        domain.setUsuarioId(entity.getInscripcion().getUsuario().getId().toString()); // Map usuarioId
+        domain.setActividadId(entity.getInscripcion().getActividad().getId().toString()); // Map actividadId
+        domain.setUsuarioDni(entity.getInscripcion().getUsuario().getDni()); // Map usuarioDni
 
         return domain;
     }

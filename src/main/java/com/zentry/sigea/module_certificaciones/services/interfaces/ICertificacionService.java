@@ -1,4 +1,6 @@
+
 package com.zentry.sigea.module_certificaciones.services.interfaces;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,22 @@ import com.zentry.sigea.module_certificaciones.presentation.models.responseDTO.V
  * Maneja la lógica de negocio para certificados y validaciones
  */
 public interface ICertificacionService {
+
+    /**
+     * Crea un certificado a partir de un archivo subido (PDF/imagen).
+     * @param request datos del certificado
+     * @param file archivo a subir
+     * @return CertificadoResponse con la URL pública
+     */
+    CertificadoResponse crearCertificadoConArchivo(CrearCertificadoRequest request, MultipartFile file);
+
+    /**
+     * Sube un archivo de certificado al proveedor externo y retorna la URL.
+     * @param file archivo a subir
+     * @param pathDestino ruta destino dentro del bucket
+     * @return URL pública del archivo subido
+     */
+    String subirCertificado(MultipartFile file, String pathDestino) throws Exception;
     
     /**
      * Crea un nuevo certificado para una inscripción

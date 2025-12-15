@@ -10,20 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zentry.sigea.module_pago.core.entities.PagoDomainEntity;
 import com.zentry.sigea.module_pago.presentation.models.requestDTO.ConsultPagoRequest;
-import com.zentry.sigea.module_pago.presentation.models.requestDTO.EstadoPagoRequest;
-import com.zentry.sigea.module_pago.presentation.models.requestDTO.MetodoPagoRequest;
 import com.zentry.sigea.module_pago.presentation.models.requestDTO.PagoRequest;
 import com.zentry.sigea.module_pago.presentation.models.responseDTO.PagoResponse;
 import com.zentry.sigea.module_pago.services.PagoService;
-import com.zentry.sigea.module_pago.services.usecase.estadopago.CrearEstadoPagoUseCase;
-import com.zentry.sigea.module_pago.services.usecase.metodopago.CrearMetodoPagoUseCase;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,7 +42,7 @@ public class PagoController {
      * Crea un pago directo con Yape
      */
     @PostMapping("/crear-pago-yape")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ORGANIZADOR', 'PARTICIPANTE')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR', 'ROLE_PARTICIPANTE')")
     @Operation(summary = "Crear pago con Yape", description = "Procesa un pago usando Yape a través de MercadoPago", security = {
             @SecurityRequirement(name = "administradorJWT"),
             @SecurityRequirement(name = "organizadorJWT"),
@@ -67,7 +63,15 @@ public class PagoController {
      * Consulta el estado de un pago
      */
     @PostMapping("/consultar-pago")
-    @Operation(summary = "Consultar estado de pago", description = "Obtiene el estado actual de un pago por su ID")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR', 'ROLE_PARTICIPANTE')")
+    @Operation(
+        summary = "Consultar estado de pago",
+        security = {
+            @SecurityRequirement(name = "administradorJWT"),
+            @SecurityRequirement(name = "organizadorJWT"),
+            @SecurityRequirement(name = "participanteJWT")
+        }, 
+        description = "Obtiene el estado actual de un pago por su ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Estado consultado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Pago no encontrado"),
@@ -97,7 +101,7 @@ public class PagoController {
     }
 
     @GetMapping("/listar-pagos")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ORGANIZADOR', 'PARTICIPANTE')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR', 'ROLE_PARTICIPANTE')")
     @Operation(summary = "Listar pagos", description = "Obtiene todos los pagos", security = {
             @SecurityRequirement(name = "administradorJWT"),
             @SecurityRequirement(name = "organizadorJWT"),

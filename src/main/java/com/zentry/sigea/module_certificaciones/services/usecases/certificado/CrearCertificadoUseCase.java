@@ -60,10 +60,10 @@ public class CrearCertificadoUseCase {
             );
         }
         
-        // Obtener estado EMITIDO por defecto
-        EstadoCertificadoDomainEntity estadoEmitido = estadoCertificadoRepository
-            .findByCodigo("EMITIDO")
-            .orElseThrow(() -> new IllegalStateException("Estado EMITIDO no encontrado en el sistema"));
+        // Obtener estado PENDIENTE por defecto
+        EstadoCertificadoDomainEntity estadoPendiente = estadoCertificadoRepository
+            .findByCodigo("PENDIENTE")
+            .orElseThrow(() -> new IllegalStateException("Estado PENDIENTE no encontrado en el sistema"));
         
         // Generar código de validación único
         String codigoValidacion = generarCodigoValidacion();
@@ -80,7 +80,7 @@ public class CrearCertificadoUseCase {
         CertificadoDomainEntity nuevoCertificado = CertificadoDomainEntity.create(
             asistenciaId,
             codigoValidacion,
-            estadoEmitido
+            estadoPendiente
         );
         
         // Guardar usando el repositorio
@@ -103,7 +103,7 @@ public class CrearCertificadoUseCase {
                 "Actividad Completada",                        // Título (se puede obtener del servicio de actividades)
                 certificadoGuardado.getCodigoValidacion(),     // Código de validación
                 certificadoGuardado.getFechaEmision(),         // Fecha de emisión
-                EstadoCertificado.EMITIDO,                     // Estado del certificado
+                EstadoCertificado.PENDIENTE,                   // Estado del certificado (ahora PENDIENTE)
                 certificadoGuardado.getUrlPdf(),               // URL del PDF (puede ser null)
                 asistenciaId.toString(),                        // ID de asistencia
                 LocalDateTime.now()                             // Fecha de generación

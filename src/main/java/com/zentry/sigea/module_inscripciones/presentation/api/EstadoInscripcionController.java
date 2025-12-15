@@ -65,12 +65,13 @@ public class EstadoInscripcionController {
      * Listar todos los estados de inscripción
      */
     @GetMapping("/listar")
-    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR' , 'ROLE_PARTICIPANTE')")
     @Operation(
         summary = "Listar estados de inscripcion",
         security = {
             @SecurityRequirement(name = "administradorJWT"),
-            @SecurityRequirement(name = "organizadorJWT")
+            @SecurityRequirement(name = "organizadorJWT"),
+            @SecurityRequirement(name = "participanteJWT")
         },
         tags = {"Listar"}
     )
@@ -83,11 +84,13 @@ public class EstadoInscripcionController {
      * Obtener un estado de inscripción por ID
      */
     @GetMapping("obtener/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ORGANIZADOR' , 'ROLE_ADMINISTRADOR' , 'ROLE_PARTICIPANTE')")
     @Operation(
         summary = "Obtener un estado de inscripcion por su ID.",
         security = {
-            @SecurityRequirement(name = "organizadorJWT")
+            @SecurityRequirement(name = "organizadorJWT"),
+            @SecurityRequirement(name = "administradorJWT"),
+            @SecurityRequirement(name = "participanteJWT")
         },
         tags = {"Obtener"}
     )
@@ -109,12 +112,13 @@ public class EstadoInscripcionController {
      * Obtener un estado de inscripción por código
      */
     @GetMapping("/obtener/codigo/{codigo}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_ORGANIZADOR' , 'ROLE_PARTICIPANTE')")
     @Operation(
         summary = "Obtener un estado de inscripcion por su codigo.",
         security = {
             @SecurityRequirement(name = "administradorJWT"),
-            @SecurityRequirement(name = "organizadorJWT")
+            @SecurityRequirement(name = "organizadorJWT"),
+            @SecurityRequirement(name = "participanteJWT")
         },
         tags = {"Obtener"}
     )
